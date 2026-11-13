@@ -28,7 +28,8 @@ require __DIR__ . '/ContactForm.php';
 
 /* ---- Session ------------------------------------------------------------- */
 
-$isHttps = ($_SERVER['HTTPS'] ?? '') === 'on';
+$isHttps = ($_SERVER['HTTPS'] ?? '') === 'on'
+    || (config('trust_proxy') && ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
 
 session_name('portfolio_session');
 session_start([

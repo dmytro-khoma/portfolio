@@ -93,6 +93,26 @@ function inline_css(): string
     return trim($css);
 }
 
+/* ---- Request ------------------------------------------------------------- */
+
+/**
+ * The visitor's IP address. Behind a trusted proxy, REMOTE_ADDR is the proxy
+ * itself, so the first address in X-Forwarded-For is used instead. A client
+ * could fake that header, but here the IP only feeds the contact-form rate
+ * limit, which also has a CSRF token and a honeypot behind it.
+ */
+function client_ip(): string
+{
+    if (config('trust_proxy') && !empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+        $first = trim(explode(',', (string) $_SERVER['HTTP_X_FORWARDED_FOR'])[0]);
+        if (filter_var($first, FILTER_VALIDATE_IP)) {
+            return $first;
+        }
+    }
+
+    return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+}
+
 /* ---- Security ------------------------------------------------------------ */
 
 /**

@@ -1,0 +1,12 @@
+.git
+.gitignore
+.claude
+neon-skirmish
+dino-catalog
+storage/*
+!storage/.gitignore
+tools
+wordpress-theme
+Dockerfile
+render.yaml
+README.md

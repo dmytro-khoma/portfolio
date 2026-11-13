@@ -54,6 +54,11 @@ return [
         'seconds' => 600,
     ],
 
+    // Set TRUST_PROXY=1 when the site runs behind a reverse proxy (Render,
+    // Docker hosting, a load balancer). Then the client IP and HTTPS are read
+    // from the X-Forwarded-* headers that the proxy adds.
+    'trust_proxy' => getenv('TRUST_PROXY') === '1',
+
     // Private files (message log, rate-limit data). Kept outside public/,
     // so the web server can never serve them.
     'storage_dir' => dirname(__DIR__) . '/storage',

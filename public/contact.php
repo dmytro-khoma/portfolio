@@ -80,7 +80,7 @@ $limiter = new RateLimiter(
     (int) config('rate_limit.seconds'),
 );
 
-$retryAfter = $limiter->hit($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+$retryAfter = $limiter->hit(client_ip());
 if ($retryAfter > 0) {
     header('Retry-After: ' . $retryAfter);
     $minutes = (int) ceil($retryAfter / 60);

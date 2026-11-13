@@ -22,6 +22,14 @@ php -S localhost:8000
 
 Then open <http://localhost:8000>.
 
+### Deploy
+
+The repository includes a `Dockerfile` (PHP 8.4 + Apache, document root
+`public/`) and a `render.yaml` blueprint for [Render](https://render.com):
+connect the repository as a Blueprint and every push to `main` redeploys.
+Behind a reverse proxy set `TRUST_PROXY=1`, so the client IP and HTTPS are
+read from the `X-Forwarded-*` headers.
+
 `public/` is the document root on purpose: `src/`, `data/` and `storage/`
 (including the contact-message log) sit outside it, so the web server can
 never serve them.
