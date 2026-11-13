@@ -215,6 +215,7 @@ activate it.
 
 ## Related projects
 
-- [Cyberpunk combat tracker](https://github.com/dmytro-khoma/cyberpunk-combat-tracker) (Django)
+- [Cyberpunk combat tracker](https://github.com/dmytro-khoma/cyberpunk-combat-tracker) (Django) ·
+  [live demo](https://cyberpunk-combat-tracker.onrender.com)
 - [Dinosauria](https://github.com/dmytro-khoma/dinosauria) (HTML, CSS, JavaScript) ·
   [live demo](https://dmytro-khoma.github.io/dinosauria/)

@@ -25,7 +25,7 @@ return [
         'image'     => 'assets/img/combat-tracker.webp',
         'image_alt' => 'Screenshot of the combat tracker: a dark grid map with fighters and walls, and the turn panel with the active fighter’s stats.',
         'repo'      => 'https://github.com/dmytro-khoma/cyberpunk-combat-tracker',
-        'demo'      => null,
+        'demo'      => 'https://cyberpunk-combat-tracker.onrender.com/',
     ],
     [
         'title'     => 'Dinosauria',
