@@ -1,5 +1,8 @@
 # Dmytro Khoma — Portfolio
 
+**Live site:** https://dmytro-khoma-portfolio.onrender.com
+(free hosting: the first visit after a quiet period can take up to a minute to wake the server)
+
 A single-page portfolio written by hand: semantic HTML, modern CSS, vanilla
 JavaScript (ES modules) and PHP 8 with no frameworks. It also includes a
 small classic WordPress theme built on the same design system.

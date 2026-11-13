@@ -14,8 +14,8 @@ RUN a2enmod headers expires deflate rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri "s!/var/www/html!${APACHE_DOCUMENT_ROOT}!g" /etc/apache2/sites-available/*.conf \
     && printf '<Directory /var/www/html/public>\n    AllowOverride All\n    Require all granted\n</Directory>\nServerTokens Prod\nServerSignature Off\n' \
-       > /etc/apache2/conf-available/portfolio.conf \
-    && a2enconf portfolio
+       > /etc/apache2/conf-available/zz-portfolio.conf \
+    && a2enconf zz-portfolio   # "zz-" loads after Debian's security.conf, so ServerTokens wins
 
 # Hosting platforms pass the port in $PORT; default to 80 locally.
 ENV PORT=80
