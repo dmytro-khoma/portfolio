@@ -1,0 +1,15 @@
+# Separate repositories
+/neon-skirmish/
+/dino-catalog/
+
+# Runtime data (contact log, rate-limit file)
+/storage/*
+!/storage/.gitignore
+
+# Local tooling
+.claude/
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

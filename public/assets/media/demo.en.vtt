@@ -1,0 +1,23 @@
+WEBVTT
+
+NOTE
+Captions for the generated demo video. Press C or the CC button to toggle.
+"line:75%" keeps the text above the player controls.
+
+00:00:00.500 --> 00:00:05.000 line:75%
+This is a generated test video for the custom player.
+
+00:00:05.000 --> 00:00:10.000 line:75%
+Press K or Space to pause, and J or L to jump 10 seconds.
+
+00:00:10.000 --> 00:00:15.000 line:75%
+Use the arrow keys to seek and to change the volume.
+
+00:00:15.000 --> 00:00:20.000 line:75%
+Press the greater-than and less-than keys to change the speed.
+
+00:00:20.000 --> 00:00:25.000 line:75%
+Press F for fullscreen, M to mute, and C to hide these captions.
+
+00:00:25.000 --> 00:00:29.500 line:75%
+Thanks for watching.

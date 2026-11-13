@@ -1,0 +1,136 @@
+/* ==========================================================================
+   layout.css
+   --------------------------------------------------------------------------
+   Layout primitives (container, stack, cluster, auto grid) and the
+   page-level grids for each section. Components never set their own outer
+   margins; spacing between blocks is decided here.
+
+   Mobile-first: base rules are for small screens, min-width media queries
+   add columns as space allows.
+
+   Layer: layout
+   ========================================================================== */
+
+@layer layout {
+  /* ---- Primitives -------------------------------------------------------- */
+
+  .container {
+    inline-size: min(100% - 2 * var(--gutter), var(--container));
+    margin-inline: auto;
+  }
+
+  /* Vertical rhythm: every direct child gets the same gap. */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-gap, var(--space-s));
+  }
+
+  .stack--m { --stack-gap: var(--space-m); }
+  .stack--l { --stack-gap: var(--space-l); }
+
+  /* Horizontal group that wraps: buttons, tags, links. */
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--cluster-gap, var(--space-xs));
+  }
+
+  /* Responsive grid with no media queries: as many columns as fit. */
+  .auto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--auto-grid-min, 16rem)), 1fr));
+    gap: var(--space-m);
+  }
+
+  /* ---- Sections ---------------------------------------------------------- */
+
+  .section {
+    padding-block: var(--space-2xl);
+
+    & + & {
+      border-block-start: var(--border);
+    }
+  }
+
+  .section__header {
+    display: grid;
+    gap: var(--space-xs);
+    max-inline-size: var(--measure);
+    margin-block-end: var(--space-xl);
+  }
+
+  /* ---- Header ------------------------------------------------------------ */
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    min-block-size: var(--header-height);
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+  }
+
+  /* ---- Hero -------------------------------------------------------------- */
+
+  .hero {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-3xl) var(--space-2xl);
+
+    @media (min-width: 60em) {
+      grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+      align-items: end;
+    }
+  }
+
+  /* ---- About ------------------------------------------------------------- */
+
+  .about {
+    display: grid;
+    gap: var(--space-xl);
+
+    @media (min-width: 52em) {
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    }
+  }
+
+  /* ---- Video demo -------------------------------------------------------- */
+
+  .video-demo {
+    display: grid;
+    gap: var(--space-l);
+
+    @media (min-width: 64em) {
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  /* ---- Contact ----------------------------------------------------------- */
+
+  .contact {
+    display: grid;
+    gap: var(--space-xl);
+
+    @media (min-width: 52em) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+    }
+  }
+
+  /* ---- Footer ------------------------------------------------------------ */
+
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-s);
+    padding-block: var(--space-l);
+  }
+}

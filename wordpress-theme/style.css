@@ -1,0 +1,26 @@
+/*
+Theme Name:        DK Portfolio
+Theme URI:         https://example.com/dk-portfolio
+Author:            Dmytro Khoma
+Description:       A lean classic theme that reuses the design system of my hand-written portfolio site. No frameworks, no jQuery, one stylesheet, one ES module. Includes a [video_demo] shortcode with a click-to-load video facade and an accessible custom player.
+Version:           1.0.0
+Requires at least: 6.5
+Requires PHP:      8.0
+License:           GPL-2.0-or-later
+License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain:       dk-portfolio
+Tags:              blog, one-column, custom-menu, accessibility-ready, translation-ready
+*/
+
+/*
+ * WordPress reads the theme header above from this file.
+ * The actual styles are not here:
+ *
+ *   assets/css/design-system.css  The shared design system, generated from
+ *                                 the portfolio site by tools/build-theme.php.
+ *                                 Do not edit it directly.
+ *   assets/css/wordpress.css      Styles for WordPress-only markup (post
+ *                                 content, alignments, captions, pagination).
+ *
+ * Both are enqueued in functions.php.
+ */

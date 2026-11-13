@@ -1,0 +1,134 @@
+/* ==========================================================================
+   base.css
+   --------------------------------------------------------------------------
+   Element defaults: document colours, typography, links, focus styles and
+   global motion preferences. Only type selectors and a few global states
+   live here; no classes except the skip link.
+
+   Layer: base
+   ========================================================================== */
+
+@layer base {
+  html {
+    /* Above 1920px wide, scale the whole rem-based layout with the screen
+       (16px at 1920, ~21px at 2560, 32px at 3840), so large monitors see
+       the same composition instead of a small column in the middle.
+       max() keeps the user's own font-size setting as the minimum. */
+    font-size: max(100%, 100vw / 120);
+    scroll-behavior: smooth;
+    /* Anchored sections are not hidden under the sticky header. */
+    scroll-padding-block-start: calc(var(--header-height) + var(--space-s));
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: var(--step-0);
+    line-height: var(--leading-normal);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--step-5); }
+  h2 { font-size: var(--step-4); }
+  h3 { font-size: var(--step-1); }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-fast) ease;
+
+    &:hover {
+      color: var(--color-accent-hover);
+      text-decoration-thickness: 2px;
+    }
+  }
+
+  strong {
+    font-weight: 650;
+  }
+
+  code,
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+  }
+
+  kbd {
+    display: inline-block;
+    min-inline-size: 1.8em;
+    padding: 0.1em 0.45em;
+    border: var(--border);
+    border-block-end-width: 2px;
+    border-radius: var(--radius-s);
+    background: var(--color-surface);
+    text-align: center;
+  }
+
+  hr {
+    border: 0;
+    border-block-start: var(--border);
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+  }
+
+  /* One clear, high-contrast focus ring for every interactive element.
+     :focus-visible keeps it for keyboard users without showing it on click. */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: var(--radius-s);
+  }
+
+  /* Skip link: hidden until focused, then the first thing on screen. */
+  .skip-link {
+    position: absolute;
+    inset-block-start: var(--space-2xs);
+    inset-inline-start: var(--space-2xs);
+    z-index: 100;
+    padding: var(--space-2xs) var(--space-s);
+    background: var(--color-text);
+    color: var(--color-bg);
+    border-radius: var(--radius-s);
+    translate: 0 -200%;
+
+    &:focus-visible {
+      translate: 0 0;
+    }
+  }
+
+  /* Respect the user's motion preference everywhere, including smooth
+     scrolling and any transition or animation defined in later layers. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

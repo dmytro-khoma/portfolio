@@ -1,0 +1,28 @@
+# ==========================================================================
+# Apache configuration for production hosting.
+# (Ignored by `php -S`, which is only a development server.)
+# ==========================================================================
+
+# Compress text responses.
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/vtt application/javascript image/svg+xml
+</IfModule>
+
+# Long cache for static assets. HTML and PHP responses are not cached.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/svg+xml          "access plus 1 month"
+    ExpiresByType image/jpeg             "access plus 1 month"
+    ExpiresByType image/webp             "access plus 1 month"
+    ExpiresByType text/vtt               "access plus 1 month"
+    ExpiresByType video/mp4              "access plus 1 month"
+    ExpiresByType video/webm             "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# Correct MIME types for captions and modules.
+AddType text/vtt .vtt
+AddType application/javascript .js
+
+# No directory listings.
+Options -Indexes

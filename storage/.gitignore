@@ -1,0 +1,3 @@
+# Runtime data (message log, rate-limit data). Never commit it.
+*
+!.gitignore

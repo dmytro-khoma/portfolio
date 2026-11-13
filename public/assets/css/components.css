@@ -1,0 +1,949 @@
+/* ==========================================================================
+   components.css
+   --------------------------------------------------------------------------
+   Reusable UI blocks, named with BEM (block__element--modifier).
+   Each block is self-contained and reads only design tokens, so it can be
+   moved into another project (the WordPress theme uses this same file).
+
+   Contents
+     1. Scroll progress bar   (scroll-driven animation, with fallback)
+     2. Site header & nav     (sticky header, accessible mobile menu)
+     3. Theme toggle          (+ view transition)
+     4. Buttons
+     5. Section headings & hero
+     6. Fact list, tags
+     7. Skill cards
+     8. Project cards         (scroll-snap + container queries)
+     9. Video facade
+    10. Video player          (custom controls around <video>)
+    11. Forms & alerts        (:has() + :user-invalid)
+    12. Site footer
+
+   Layer: components
+   ========================================================================== */
+
+@layer components {
+  /* ---- 1. Scroll progress bar ------------------------------------------- */
+  /* Uses a scroll-driven animation, so no JS scroll listener is needed.
+     Browsers without animation-timeline simply never show the bar. */
+  .progress-bar {
+    display: none;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .progress-bar {
+        display: block;
+        position: fixed;
+        inset-block-start: 0;
+        inset-inline: 0;
+        z-index: 60;
+        block-size: 2px;
+        background: var(--color-accent);
+        transform-origin: 0 50%;
+        animation: progress-grow linear both;
+        animation-timeline: scroll(root block);
+      }
+    }
+  }
+
+  @keyframes progress-grow {
+    from { scale: 0 1; }
+    to { scale: 1 1; }
+  }
+
+  /* ---- 2. Site header & navigation ------------------------------------- */
+
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 50;
+    background: var(--color-bg);
+    border-block-end: var(--border);
+
+    @supports (backdrop-filter: blur(1px)) {
+      background: color-mix(in srgb, var(--color-bg) 82%, transparent);
+      backdrop-filter: saturate(1.4) blur(12px);
+    }
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    color: var(--color-text);
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--color-text);
+      text-decoration: none;
+    }
+  }
+
+  .brand__mark {
+    display: grid;
+    place-items: center;
+    inline-size: 2.25rem;
+    aspect-ratio: 1;
+    border-radius: var(--radius-s);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .site-nav__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-s);
+  }
+
+  .site-nav__link {
+    display: inline-block;
+    padding: var(--space-3xs) 0;
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-weight: 500;
+    text-decoration: none;
+
+    /* aria-current: "true" from js/nav.js, "page" from WordPress menus */
+    &:hover,
+    &[aria-current] {
+      color: var(--color-text);
+    }
+  }
+
+  /* Mobile menu. Only collapses when JS is running (.has-js on <html>),
+     so without JS the links are always visible and usable. */
+  @media (max-width: 47.99em) {
+    .has-js .site-nav__toggle {
+      display: inline-grid;
+    }
+
+    .has-js .site-nav__list {
+      position: absolute;
+      inset-block-start: 100%;
+      inset-inline: 0;
+      flex-direction: column;
+      gap: 0;
+      padding: var(--space-2xs) var(--gutter) var(--space-m);
+      background: var(--color-bg);
+      border-block-end: var(--border);
+      box-shadow: var(--shadow-m);
+    }
+
+    .has-js .site-nav__list:not(.is-open) {
+      display: none;
+    }
+
+    .has-js .site-nav__link {
+      display: block;
+      padding-block: var(--space-xs);
+      font-size: var(--step-0);
+      border-block-end: var(--border);
+    }
+
+    /* The page behind an open menu should not scroll. */
+    html:has(.site-nav__list.is-open) {
+      overflow: hidden;
+    }
+  }
+
+  /* Icons inside icon buttons swap based on aria-expanded. */
+  .site-nav__toggle[aria-expanded="true"] .icon--menu,
+  .site-nav__toggle[aria-expanded="false"] .icon--close {
+    display: none;
+  }
+
+  /* ---- 3. Theme toggle --------------------------------------------------- */
+
+  .icon-button {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.75rem; /* 44px: comfortable touch target */
+    aspect-ratio: 1;
+    padding: 0;
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--color-text);
+    transition: background-color var(--duration-fast) ease;
+
+    &:hover {
+      background: var(--color-surface-alt);
+    }
+
+    & svg {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+    }
+  }
+
+  /* The menu toggle is for small screens only. This rule comes after
+     .icon-button so it wins; the mobile rule above is more specific. */
+  .site-nav__toggle {
+    display: none;
+  }
+
+  /* Show the moon in light mode and the sun in dark mode. */
+  .theme-toggle .icon--sun {
+    display: none;
+  }
+
+  :root[data-theme="dark"] .theme-toggle {
+    .icon--sun { display: block; }
+    .icon--moon { display: none; }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .theme-toggle {
+      .icon--sun { display: block; }
+      .icon--moon { display: none; }
+    }
+  }
+
+  /* Theme changes cross-fade with the View Transitions API (js/theme.js).
+     Browsers without it switch instantly. */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: var(--duration);
+  }
+
+  /* ---- 4. Buttons -------------------------------------------------------- */
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2xs);
+    min-block-size: 2.75rem;
+    padding: var(--space-2xs) var(--space-m);
+    border: 1px solid transparent;
+    border-radius: var(--radius-pill);
+    font-size: var(--step--1);
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    transition:
+      background-color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease,
+      color var(--duration-fast) ease;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    & svg {
+      inline-size: 1.1em;
+      block-size: 1.1em;
+    }
+
+    &[aria-busy="true"] {
+      cursor: progress;
+      opacity: 0.7;
+    }
+  }
+
+  .button--primary {
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+
+    &:hover {
+      background: var(--color-accent-hover);
+      color: var(--color-on-accent);
+    }
+  }
+
+  .button--ghost {
+    border-color: var(--color-border);
+    background: transparent;
+    color: var(--color-text);
+
+    &:hover {
+      border-color: var(--color-text);
+      color: var(--color-text);
+    }
+  }
+
+  /* ---- 5. Section headings & hero --------------------------------------- */
+
+  .eyebrow {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .lead {
+    color: var(--color-text-muted);
+    font-size: var(--step-1);
+    line-height: 1.5;
+    max-inline-size: var(--measure);
+  }
+
+  .hero__title {
+    max-inline-size: 16ch;
+  }
+
+  .hero__title em {
+    font-style: italic;
+    color: var(--color-accent);
+  }
+
+  .prose {
+    max-inline-size: var(--measure);
+
+    & > * + * {
+      margin-block-start: var(--space-s);
+    }
+  }
+
+  /* ---- 6. Fact list, tags ------------------------------------------------ */
+
+  .facts {
+    display: grid;
+    border-block-start: var(--border);
+  }
+
+  .facts__row {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    gap: var(--space-s);
+    padding-block: var(--space-xs);
+    border-block-end: var(--border);
+    font-size: var(--step--1);
+  }
+
+  .facts__term {
+    color: var(--color-text-muted);
+  }
+
+  .facts__value {
+    margin: 0;
+    font-weight: 500;
+  }
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  .tag {
+    padding: 0.2em 0.7em;
+    border: var(--border);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    white-space: nowrap;
+  }
+
+  /* ---- 7. Skill cards ---------------------------------------------------- */
+
+  .skill-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    block-size: 100%;
+    padding: var(--space-m);
+    border: var(--border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+
+  .skill-card__index {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .skill-card__text {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .skill-card__proof {
+    margin-block-start: auto;
+    padding-block-start: var(--space-xs);
+    border-block-start: var(--border);
+    font-size: var(--step--1);
+
+    & code {
+      color: var(--color-text);
+    }
+  }
+
+  /* ---- 8. Project cards -------------------------------------------------- */
+  /* Small screens: a horizontal scroll-snap carousel.
+     Wider screens: a grid where the first project is featured. */
+
+  .project-scroller {
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: inline mandatory;
+    scroll-padding-inline: var(--gutter);
+    scrollbar-width: thin;
+
+    @media (min-width: 48em) {
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+    }
+  }
+
+  .project-list {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: min(85%, 22rem);
+    gap: var(--space-m);
+    padding-block-end: var(--space-s);
+
+    & > li {
+      scroll-snap-align: start;
+    }
+
+    /* Wider screens: one full-width card per project. Each card then has
+       enough room for its container query to switch to image + text side
+       by side. */
+    @media (min-width: 48em) {
+      grid-auto-flow: row;
+      grid-template-columns: minmax(0, 1fr);
+      gap: var(--space-l);
+      padding-block-end: 0;
+    }
+  }
+
+  /* The card is a size container, so its layout depends on the space the
+     card actually has, not on the viewport. */
+  .project-card {
+    container: project-card / inline-size;
+    block-size: 100%;
+    border: var(--border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    overflow: hidden;
+    transition: box-shadow var(--duration) var(--ease-out), border-color var(--duration) ease;
+
+    &:hover,
+    &:focus-within {
+      border-color: color-mix(in srgb, var(--color-text) 30%, var(--color-border));
+      box-shadow: var(--shadow-m);
+    }
+  }
+
+  .project-card__inner {
+    display: grid;
+    block-size: 100%;
+  }
+
+  .project-card__media {
+    aspect-ratio: 16 / 10;
+    background: var(--color-surface-alt);
+
+    & img {
+      inline-size: 100%;
+      block-size: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .project-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    padding: var(--space-m);
+  }
+
+  .project-card__meta {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .project-card__text {
+    color: var(--color-text-muted);
+  }
+
+  .project-card__credit {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+    font-style: italic;
+  }
+
+  .project-card__links {
+    margin-block-start: auto;
+    padding-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  @container project-card (min-width: 40rem) {
+    .project-card__inner {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    }
+
+    /* Covers are screenshots, so they are never cropped: the whole 16:10
+       image sits framed on a tinted panel, centred next to the text. */
+    .project-card__media {
+      aspect-ratio: auto;
+      display: grid;
+      align-items: center;
+      padding: var(--space-m);
+
+      & img {
+        block-size: auto;
+        aspect-ratio: 16 / 10;
+        border-radius: var(--radius-s);
+        box-shadow: var(--shadow-m);
+      }
+    }
+
+    .project-card__body {
+      justify-content: center;
+      padding: var(--space-xl);
+    }
+
+    .project-card__title {
+      font-size: var(--step-3);
+    }
+  }
+
+  /* ---- 9. Video facade --------------------------------------------------- */
+  /* A lightweight poster + play button. The real <video> (and its bytes)
+     are only created after the user asks for it (js/video-facade.js).
+     Without JS the facade is a plain link to the video file. */
+
+  .video {
+    container-type: inline-size; /* player UI adapts to its own width */
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-m);
+    background: var(--color-player-bg);
+    overflow: hidden;
+    box-shadow: var(--shadow-m);
+  }
+
+  .video__facade {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: var(--color-player-ui);
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--color-player-ui);
+    }
+
+    &:focus-visible {
+      outline-offset: -4px;
+      outline-color: var(--color-player-ui);
+    }
+  }
+
+  .video__poster {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .video__play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    inline-size: clamp(3.5rem, 10cqi, 5rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.95);
+    color: #0b0c0f;
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.35);
+    transition: scale var(--duration) var(--ease-out);
+
+    & svg {
+      inline-size: 40%;
+      margin-inline-start: 8%; /* optical centring of the triangle */
+    }
+  }
+
+  .video__facade:hover .video__play,
+  .video__facade:focus-visible .video__play {
+    scale: 1.08;
+  }
+
+  .video__label {
+    position: absolute;
+    inset-block-end: var(--space-s);
+    inset-inline-start: var(--space-s);
+    padding: var(--space-3xs) var(--space-xs);
+    border-radius: var(--radius-s);
+    background: rgb(0 0 0 / 0.6);
+    font-size: var(--step--1);
+    font-weight: 500;
+  }
+
+  /* ---- 10. Video player -------------------------------------------------- */
+
+  .player {
+    --player-progress: 0%;
+    --player-buffered: 0%;
+    --player-volume: 100%;
+
+    position: absolute;
+    inset: 0;
+    display: grid;
+    background: var(--color-player-bg);
+    color: var(--color-player-ui);
+
+    &:fullscreen {
+      border-radius: 0;
+    }
+  }
+
+  .player__video {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: contain;
+    cursor: pointer;
+  }
+
+  /* Native captions are restyled to match the UI. */
+  .player__video::cue {
+    background: rgb(0 0 0 / 0.75);
+    color: #fff;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+  }
+
+  .player__controls {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3xs) var(--space-2xs);
+    padding: var(--space-l) var(--space-xs) var(--space-2xs);
+    background: linear-gradient(to top, rgb(0 0 0 / 0.8), rgb(0 0 0 / 0));
+    transition: opacity var(--duration) ease;
+  }
+
+  /* While playing, controls fade out after a few seconds of no activity
+     (data-idle is set by js/video-player.js). Keyboard users keep them:
+     :has() checks for visible focus inside the controls. */
+  .player[data-state="playing"][data-idle]:not(:has(.player__controls :focus-visible)) {
+    cursor: none;
+
+    & .player__controls {
+      opacity: 0;
+    }
+  }
+
+  .player__button {
+    display: inline-grid;
+    place-items: center;
+    min-inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding: 0 var(--space-3xs);
+    border: 0;
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: inherit;
+    font-size: var(--step--1);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+
+    &:hover {
+      background: rgb(255 255 255 / 0.15);
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-player-ui);
+      outline-offset: 0;
+    }
+
+    & svg {
+      inline-size: 1.4rem;
+      block-size: 1.4rem;
+    }
+
+    &[aria-pressed="true"] {
+      box-shadow: inset 0 -2px 0 currentColor;
+    }
+  }
+
+  /* Icon state is driven by attributes on .player, not by swapping markup. */
+  .player[data-state="playing"] .icon--play,
+  .player:not([data-state="playing"]) .icon--pause,
+  .player[data-muted] .icon--volume,
+  .player:not([data-muted]) .icon--muted,
+  .player[data-fullscreen] .icon--expand,
+  .player:not([data-fullscreen]) .icon--collapse {
+    display: none;
+  }
+
+  .player__time {
+    font-size: var(--step--1);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .player__spacer {
+    flex: 1;
+  }
+
+  /* Range inputs: native element, custom look. The filled part is a
+     gradient driven by a custom property that JS updates. */
+  .player__range {
+    --fill: var(--player-progress);
+
+    appearance: none;
+    -webkit-appearance: none;
+    inline-size: 100%;
+    block-size: 1.5rem;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+
+    &:focus-visible {
+      outline-color: var(--color-player-ui);
+    }
+
+    &::-webkit-slider-runnable-track {
+      block-size: 4px;
+      border-radius: 2px;
+      background: linear-gradient(
+        to right,
+        var(--color-player-ui) var(--fill),
+        rgb(255 255 255 / 0.45) var(--fill) var(--player-buffered, var(--fill)),
+        rgb(255 255 255 / 0.25) 0
+      );
+    }
+
+    &::-moz-range-track {
+      block-size: 4px;
+      border-radius: 2px;
+      background: linear-gradient(
+        to right,
+        var(--color-player-ui) var(--fill),
+        rgb(255 255 255 / 0.45) var(--fill) var(--player-buffered, var(--fill)),
+        rgb(255 255 255 / 0.25) 0
+      );
+    }
+
+    &::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      inline-size: 14px;
+      block-size: 14px;
+      margin-block-start: -5px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--color-player-ui);
+    }
+
+    &::-moz-range-thumb {
+      inline-size: 14px;
+      block-size: 14px;
+      border: 0;
+      border-radius: 50%;
+      background: var(--color-player-ui);
+    }
+  }
+
+  .player__seek {
+    order: -1;            /* full-width bar above the buttons */
+    flex: 1 0 100%;
+  }
+
+  .player__volume {
+    --fill: var(--player-volume);
+    --player-buffered: var(--player-volume);
+
+    inline-size: 5rem;
+  }
+
+  /* Hide the volume slider on narrow players; the mute button remains. */
+  @container (max-width: 26rem) {
+    .player__volume {
+      display: none;
+    }
+  }
+
+  /* Keyboard shortcut list under the player */
+  .shortcuts {
+    border-block-start: var(--border);
+    padding-block-start: var(--space-xs);
+
+    & summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+  }
+
+  .shortcuts__table {
+    inline-size: 100%;
+    margin-block-start: var(--space-xs);
+    border-collapse: collapse;
+    font-size: var(--step--1);
+
+    & th,
+    & td {
+      padding-block: var(--space-3xs);
+      border-block-end: var(--border);
+      text-align: start;
+    }
+
+    & th {
+      font-weight: 400;
+      white-space: nowrap;
+      padding-inline-end: var(--space-s);
+    }
+  }
+
+  /* ---- 11. Forms & alerts ----------------------------------------------- */
+
+  .form {
+    display: grid;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    border: var(--border);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+  }
+
+  .form__row {
+    display: grid;
+    gap: var(--space-m);
+
+    @media (min-width: 36em) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-3xs);
+  }
+
+  .field__label {
+    font-size: var(--step--1);
+    font-weight: 600;
+  }
+
+  .field__optional {
+    color: var(--color-text-muted);
+    font-weight: 400;
+  }
+
+  .field__input {
+    inline-size: 100%;
+    min-block-size: 2.75rem;
+    padding: var(--space-2xs) var(--space-xs);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-s);
+    background: var(--color-bg);
+    transition: border-color var(--duration-fast) ease;
+
+    &:hover {
+      border-color: var(--color-text-muted);
+    }
+
+    &:focus-visible {
+      outline-offset: 0;
+      border-color: var(--color-focus);
+    }
+  }
+
+  textarea.field__input {
+    min-block-size: 9rem;
+  }
+
+  .field__hint {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .field__error {
+    color: var(--color-danger);
+    font-size: var(--step--1);
+    font-weight: 500;
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  /* Invalid state: set by JS/PHP (aria-invalid) or by the browser after the
+     user has interacted (:user-invalid). :has() lets the whole field react. */
+  .field:has(.field__input[aria-invalid="true"]),
+  .field:has(.field__input:user-invalid) {
+    & .field__input {
+      border-color: var(--color-danger);
+    }
+
+    & .field__label {
+      color: var(--color-danger);
+    }
+  }
+
+  /* Honeypot: off-screen for humans, still in the DOM for bots. */
+  .field--trap {
+    position: absolute;
+    inset-inline-start: -10000px;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+  }
+
+  .form__footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+  }
+
+  .form__note {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  .alert {
+    padding: var(--space-xs) var(--space-s);
+    border: var(--border);
+    border-inline-start-width: 4px;
+    border-radius: var(--radius-s);
+    background: var(--color-bg);
+    font-size: var(--step--1);
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  .alert--success {
+    border-inline-start-color: var(--color-success);
+  }
+
+  .alert--error {
+    border-inline-start-color: var(--color-danger);
+  }
+
+  /* ---- 12. Site footer --------------------------------------------------- */
+
+  .site-footer {
+    border-block-start: var(--border);
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+}

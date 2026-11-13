@@ -1,0 +1,73 @@
+/* ==========================================================================
+   reset.css
+   --------------------------------------------------------------------------
+   A small, modern reset. It removes inconsistent browser defaults but keeps
+   useful ones (e.g. list semantics, focus outlines are restyled in base.css).
+
+   Layer: reset (lowest priority, see the @layer order in tokens.css)
+   ========================================================================== */
+
+@layer reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-block-size: 100vh;
+    min-block-size: 100dvh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  picture,
+  svg,
+  video {
+    display: block;
+    max-inline-size: 100%;
+    block-size: auto;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+    color: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4 {
+    overflow-wrap: break-word;
+  }
+
+  /* Lists with a class are treated as UI lists, not prose lists.
+     role="list" is added in the markup so Safari keeps list semantics. */
+  ul[class],
+  ol[class] {
+    list-style: none;
+    padding: 0;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+}
