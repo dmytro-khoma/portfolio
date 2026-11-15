@@ -2,6 +2,9 @@
 /neon-skirmish/
 /dino-catalog/
 
+# Personal documents
+/cv/
+
 # Runtime data (contact log, rate-limit file)
 /storage/*
 !/storage/.gitignore
@@ -13,3 +16,6 @@
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Node packages (npm install)
+/node_modules/

@@ -14,11 +14,10 @@ declare(strict_types=1);
 <section class="container hero" aria-labelledby="hero-title">
     <div class="stack stack--l">
         <p class="eyebrow"><?= e(config('role')) ?> · <?= e(config('location')) ?></p>
-        <h1 class="hero__title" id="hero-title" data-fx-title>Hi, I’m Dmytro. I build websites with <em>plain</em> HTML, CSS, JavaScript and PHP.</h1>
+        <h1 class="hero__title" id="hero-title" data-fx-title>Hi, I’m Dmytro. I build <em>fast</em> and interactive websites.</h1>
         <p class="lead">
-            I study Applied Informatics in Bratislava and I’m looking for part-time front-end work,
-            ideally on WordPress sites. This page is built without frameworks,
-            and its source code is open, so it also works as a code sample.
+            I study Applied Informatics in Bratislava and I’m looking for part-time front-end work.
+            The source code of this page is open on GitHub, so it also works as a code sample.
         </p>
         <div class="cluster">
             <a class="button button--primary" href="#video">

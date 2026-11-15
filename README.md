@@ -4,7 +4,7 @@
 (free hosting: the first visit after a quiet period can take up to a minute to wake the server)
 
 A single-page portfolio: semantic HTML, modern CSS, vanilla
-JavaScript (ES modules) and PHP 8 with no frameworks. It also includes a
+JavaScript (ES modules) and PHP 8. It also includes a
 small classic WordPress theme built on the same design system.
 
 **Lighthouse (local, `php -S`):** Performance 100 · Accessibility 100 ·
@@ -130,7 +130,7 @@ with server-side messages.
 
 ### Effects — `effects.js` + `effects.css`
 
-A layer of interactive effects on top of the plain page, with no libraries:
+A layer of interactive effects on top of the plain page:
 
 | Effect | How it works |
 |---|---|
@@ -233,7 +233,7 @@ activate it.
 
 ### Performance and accessibility checklist
 
-- No frameworks, no web fonts (system font stacks), no render-blocking
+- No web fonts (system font stacks), no render-blocking
   requests; ES modules are deferred and preloaded.
 - Images have `width`/`height` (no layout shift) and `loading="lazy"`.
 - The video player is loaded only on demand.

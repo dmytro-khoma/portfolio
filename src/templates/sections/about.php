@@ -17,9 +17,9 @@ declare(strict_types=1);
                 like a combat tracker for a cyberpunk tabletop game and a dinosaur catalogue.
             </p>
             <p>
-                For the web, I like to start with the basics. Before I add a library, I want to know
-                what the browser can already do on its own. That’s why there is no Bootstrap or React
-                here. The code has comments, so you can open any file and follow what it does.
+                For the web, I like to know what the browser can do on its own, and then pick the
+                tool that fits the job. The code has comments, so you can open any file and follow
+                what it does.
             </p>
             <p>
                 Now I’m looking for my first paid front-end job. I can start right away.

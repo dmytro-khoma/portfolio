@@ -22,12 +22,12 @@ return [
         ],
         [
             'title' => 'JavaScript',
-            'text'  => 'Small ES modules without any libraries: the theme switch, the mobile menu, the video player and the contact form.',
+            'text'  => 'Small ES modules: the theme switch, the mobile menu, the video player and the contact form.',
             'proof' => 'public/assets/js/',
         ],
         [
             'title' => 'PHP',
-            'text'  => 'Simple templates without a framework, and a contact form handler with validation, a CSRF token, a honeypot and a rate limit.',
+            'text'  => 'Simple templates and a contact form handler with validation, a CSRF token, a honeypot and a rate limit.',
             'proof' => 'public/contact.php, src/',
         ],
         [
@@ -42,7 +42,7 @@ return [
         ],
         [
             'title' => 'Speed and accessibility',
-            'text'  => 'No web fonts, no frameworks, lazy images. The page works with a keyboard and respects the “reduce motion” setting.',
+            'text'  => 'Lazy images and code that loads only when it is needed. The page works with a keyboard and respects the “reduce motion” setting.',
             'proof' => 'README.md',
         ],
     ],

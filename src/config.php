@@ -18,7 +18,7 @@ return [
     'lang'     => 'en',
 
     'description' => 'Dmytro Khoma, Applied Informatics student in Bratislava. '
-        . 'Front-end work with plain HTML, CSS, JavaScript, PHP and WordPress.',
+        . 'Front-end work with HTML, CSS, JavaScript, WebGL and PHP.',
 
     // Public profile links. TODO: replace null with your real URLs.
     'links' => [

@@ -11,7 +11,7 @@
 
 declare(strict_types=1);
 
-$words = ['No frameworks', 'WebGL', 'Accessible', 'Fast', 'Readable code'];
+$words = ['Interactive', 'WebGL', 'Accessible', 'Fast', 'Readable code'];
 
 /** One row repeated twice, so a -50% translate loops seamlessly. */
 $row = static function (array $items): string {

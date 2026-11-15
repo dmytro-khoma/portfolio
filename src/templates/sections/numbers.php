@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 $numbers = [
     ['value' => '100', 'unit' => '',   'label' => 'Lighthouse score in all four categories'],
-    ['value' => '0',   'unit' => '',   'label' => 'frameworks, libraries or web fonts'],
+    ['value' => '0',   'unit' => '',   'label' => 'layout shift while the page loads (CLS)'],
     ['value' => '0',   'unit' => 'ms', 'label' => 'Total Blocking Time'],
     ['value' => '1.2', 'unit' => 's',  'label' => 'Largest Contentful Paint on a phone'],
 ];
