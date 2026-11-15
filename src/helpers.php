@@ -80,7 +80,7 @@ function icon(string $name, string $extraClass = ''): string
  */
 function inline_css(): string
 {
-    $files = ['tokens', 'reset', 'base', 'layout', 'components', 'utilities'];
+    $files = ['tokens', 'reset', 'base', 'layout', 'components', 'effects', 'utilities'];
     $css = '';
 
     foreach ($files as $name) {

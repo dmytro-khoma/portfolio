@@ -29,8 +29,10 @@ render('partials/header', ['nav' => $nav]);
 <main id="main">
     <?php
     render('sections/hero');
+    render('sections/marquee', ['tools' => $skills['tools']]);
     render('sections/about');
     render('sections/skills', ['skills' => $skills]);
+    render('sections/numbers');
     render('sections/projects', ['projects' => $projects]);
     render('sections/video', ['video' => config('video')]);
     render('sections/contact', ['result' => is_array($contactResult) ? $contactResult : []]);

@@ -25,7 +25,7 @@ $fallbackSource = end($video['sources'])['src'];
             <h2 id="video-title">Video player demo</h2>
             <p class="lead">
                 Click the picture to load the video. Until then the page doesn’t download any video
-                data. The controls are my own, built on top of the normal <code>&lt;video&gt;</code> element.
+                data. The controls are custom, built on top of the normal <code>&lt;video&gt;</code> element.
             </p>
         </header>
 

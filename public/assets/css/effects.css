@@ -1,0 +1,410 @@
+/* ==========================================================================
+   effects.css
+   --------------------------------------------------------------------------
+   The "show-off" layer: styles for the interactive effects started by
+   js/effects.js (WebGL hero, kinetic title, tilt cards, marquee, gooey
+   numbers, spring-dot field, spotlight text).
+
+   Rules of this layer
+   - Everything that depends on JavaScript is scoped to .has-fx, a class
+     that js/effects.js puts on <html> only after it has started. Without
+     JS, or with "reduce motion", the page looks like the plain version.
+   - Effects never hide content and never move the layout, so they cannot
+     hurt LCP or CLS. They only use transform, opacity, filter and canvas.
+   - Colours come from the design tokens, so both themes just work.
+
+   Not copied into the WordPress theme (see tools/build-theme.php).
+
+   Layer: effects
+   ========================================================================== */
+
+@layer effects {
+  :root {
+    --fx-2: #e0336f;   /* hot pink */
+    --fx-3: #0f8a6a;   /* teal */
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fx-2: #ff5c97;
+      --fx-3: #c6f432;  /* acid lime */
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --fx-2: #ff5c97;
+    --fx-3: #c6f432;
+  }
+
+  /* ---- 1. Hero stage: WebGL canvas behind the hero --------------------- */
+
+  .hero-stage {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+  }
+
+  .hero-canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    inline-size: 100%;
+    block-size: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 1.6s var(--ease-out);
+    /* Strongest on the right, fading out under the headline. */
+    mask-image: radial-gradient(ellipse 75% 95% at 85% 45%, #000 15%, transparent 72%);
+  }
+
+  .hero-canvas.is-ready {
+    opacity: 1;
+  }
+
+  /* The facts list sits on the shader, so it gets a frosted panel. */
+  .has-fx .hero .facts {
+    padding-inline: var(--space-s);
+    border: var(--border);
+    border-radius: var(--radius-m);
+    background: color-mix(in srgb, var(--color-bg) 70%, transparent);
+    backdrop-filter: blur(16px) saturate(1.3);
+  }
+
+  .has-fx .hero .facts__row:last-child {
+    border-block-end: 0;
+  }
+
+  /* ---- 2. Kinetic title: letters lean towards the pointer -------------- */
+
+  .fx-word {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .fx-char {
+    --f: 0;
+    display: inline-block;
+    transform: translateY(calc(var(--f) * -0.22em)) rotate(calc(var(--f) * -6deg)) scale(calc(1 + var(--f) * 0.12));
+    color: color-mix(in srgb, var(--color-accent) calc(var(--f) * 100%), currentColor);
+    will-change: transform;
+  }
+
+  /* ---- 3. Eyebrow scramble --------------------------------------------- */
+
+  .fx-glyph {
+    color: var(--color-accent);
+  }
+
+  /* ---- 4. Tilt + spotlight cards --------------------------------------- */
+
+  .has-fx :is(.skill-card, .project-card) {
+    position: relative;
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition:
+      transform 0.6s var(--ease-out),
+      box-shadow var(--duration) var(--ease-out),
+      border-color var(--duration) ease;
+  }
+
+  /* A glowing border that follows the pointer (masked to the 1px ring). */
+  .has-fx :is(.skill-card, .project-card)::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 2;
+    padding: 1px;
+    border-radius: inherit;
+    background: radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), var(--color-accent), var(--fx-2) 35%, transparent 70%);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration) ease;
+  }
+
+  /* A soft light inside the card. */
+  .has-fx :is(.skill-card, .project-card)::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 65%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duration) ease;
+  }
+
+  .has-fx :is(.skill-card, .project-card):hover::before,
+  .has-fx :is(.skill-card, .project-card):hover::after {
+    opacity: 1;
+  }
+
+  .has-fx .skill-card > *,
+  .has-fx .project-card__inner {
+    position: relative;
+    z-index: 3;
+  }
+
+  .has-fx .skill-card__index {
+    transition: translate 0.6s var(--ease-out), color var(--duration) ease;
+  }
+
+  .has-fx .skill-card:hover .skill-card__index {
+    translate: 0.4em 0;
+    color: var(--fx-2);
+  }
+
+  .has-fx .project-card__media img {
+    transition: scale 0.8s var(--ease-out), rotate 0.8s var(--ease-out);
+  }
+
+  .has-fx .project-card:hover .project-card__media img {
+    scale: 1.04;
+    rotate: -0.6deg;
+  }
+
+  /* ---- 5. Magnetic buttons --------------------------------------------- */
+
+  .has-fx .button {
+    transition:
+      translate 0.5s var(--ease-out),
+      background-color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease,
+      color var(--duration-fast) ease;
+  }
+
+  /* ---- 6. Marquee band (decorative, aria-hidden) ------------------------ */
+
+  .fx-marquee {
+    position: relative;
+    display: grid;
+    place-items: center;
+    block-size: clamp(9rem, 18vw, 16rem);
+    overflow: clip;
+    border-block: var(--border);
+  }
+
+  .fx-marquee__band {
+    position: absolute;
+    inline-size: 115%;
+    padding-block: var(--space-xs);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .fx-marquee__band--a {
+    z-index: 1;
+    background: var(--color-accent);
+    color: var(--color-on-accent);
+    rotate: -3deg;
+  }
+
+  .fx-marquee__band--b {
+    background: var(--color-text);
+    color: var(--color-bg);
+    rotate: 2.5deg;
+  }
+
+  .fx-marquee__row {
+    display: inline-flex;
+    animation: fx-marquee 38s linear infinite;
+  }
+
+  .fx-marquee__band--b .fx-marquee__row {
+    animation-direction: reverse;
+    animation-duration: 46s;
+  }
+
+  .fx-marquee__item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    padding-inline: 0.6em;
+    font-size: var(--step-3);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+
+    &::after {
+      content: "✦";
+      font-size: 0.6em;
+    }
+  }
+
+  .fx-marquee__band--b .fx-marquee__item {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    text-transform: none;
+  }
+
+  @keyframes fx-marquee {
+    to { translate: -50% 0; }
+  }
+
+  /* ---- 7. Numbers with gooey blobs -------------------------------------- */
+
+  .numbers-stage {
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    padding-block: var(--space-l);
+    background: var(--color-bg); /* the backdrop that "difference" blends with */
+  }
+
+  .fx-goo {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    display: none;
+  }
+
+  .has-fx .fx-goo {
+    display: block;
+    filter: url("#fx-goo");
+  }
+
+  .fx-blob {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-start: 50%;
+    inline-size: var(--s);
+    aspect-ratio: 1;
+    margin: calc(var(--s) / -2);
+    border-radius: 50%;
+    background: var(--color-accent);
+    animation: var(--a) var(--d) ease-in-out infinite;
+
+    &:nth-child(even) {
+      background: var(--fx-2);
+    }
+  }
+
+  .fx-blob--1 { --s: 10rem; --a: fx-orbit-1; --d: 13s; }
+  .fx-blob--2 { --s: 7rem;  --a: fx-orbit-2; --d: 9s; }
+  .fx-blob--3 { --s: 12rem; --a: fx-orbit-3; --d: 15s; }
+  .fx-blob--4 { --s: 5rem;  --a: fx-orbit-4; --d: 8s; }
+
+  .fx-blob--cursor {
+    --s: 8rem;
+    inset: 0 auto auto 0;
+    background: var(--fx-3);
+    animation: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+
+  .numbers-stage:hover .fx-blob--cursor {
+    opacity: 1;
+  }
+
+  @keyframes fx-orbit-1 { 50% { translate: -28vw -2rem; } 0%, 100% { translate: 18vw 2rem; } }
+  @keyframes fx-orbit-2 { 50% { translate: 24vw -2rem; } 0%, 100% { translate: -14vw 3rem; } }
+  @keyframes fx-orbit-3 { 50% { translate: 4vw 3rem; } 0%, 100% { translate: -30vw -2rem; } }
+  @keyframes fx-orbit-4 { 50% { translate: -6vw 1rem; } 0%, 100% { translate: 30vw -3rem; } }
+
+  .numbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr));
+    gap: var(--space-l);
+  }
+
+  .numbers__item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-2xs);
+    padding-block-start: var(--space-s);
+    border-block-start: 2px solid var(--color-text);
+  }
+
+  .numbers__value {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(3.5rem, 2rem + 6vw, 7rem);
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .numbers__value small {
+    font-size: 0.4em;
+    letter-spacing: 0;
+  }
+
+  .numbers__label {
+    color: var(--color-text-muted);
+    font-size: var(--step--1);
+  }
+
+  /* Over the blobs, white + "difference" keeps the big numbers readable in
+     both themes. The small labels get a solid chip instead, so their
+     contrast never depends on where a blob happens to be. */
+  .has-fx .numbers__value {
+    color: #fff;
+    mix-blend-mode: difference;
+  }
+
+  .has-fx .numbers__label {
+    align-self: flex-start;
+    margin-inline-start: -0.5em;
+    padding: 0.15em 0.5em;
+    border-radius: var(--radius-s);
+    background: var(--color-bg);
+  }
+
+  /* ---- 8. Spotlight + spring field (contact) ---------------------------- */
+
+  .fx-spot {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-block-size: clamp(14rem, 34vw, 26rem);
+    margin-block-end: var(--space-xl);
+    border: var(--border);
+    border-radius: var(--radius-l);
+    overflow: clip;
+    isolation: isolate;
+    user-select: none;
+  }
+
+  .fx-spot__canvas {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    inline-size: 100%;
+    block-size: 100%;
+  }
+
+  .fx-spot__text {
+    grid-area: 1 / 1;
+    font-family: var(--font-serif);
+    font-size: clamp(3rem, 1rem + 10vw, 10rem);
+    font-weight: 600;
+    font-style: italic;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .fx-spot__fill {
+    display: none;
+  }
+
+  .has-fx .fx-spot__out {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-text-muted);
+  }
+
+  .has-fx .fx-spot__fill {
+    display: block;
+    background: linear-gradient(100deg, var(--color-accent), var(--fx-2) 50%, var(--fx-3));
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    clip-path: circle(var(--r, 0px) at var(--x, 50%) var(--y, 50%));
+  }
+}

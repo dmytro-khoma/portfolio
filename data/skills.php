@@ -37,7 +37,7 @@ return [
         ],
         [
             'title' => 'Video',
-            'text'  => 'The video loads only after a click. The player controls are my own, on top of the browser’s <video> element.',
+            'text'  => 'The video loads only after a click. The player has custom controls, built on top of the browser’s <video> element.',
             'proof' => 'the video demo below',
         ],
         [

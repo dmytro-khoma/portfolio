@@ -29,6 +29,13 @@ $github = config('links.github');
 $linkedin = config('links.linkedin');
 ?>
 <section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+        <div class="fx-spot" aria-hidden="true" data-fx-spot>
+            <canvas class="fx-spot__canvas" data-fx-field></canvas>
+            <span class="fx-spot__text fx-spot__out">Let’s talk</span>
+            <span class="fx-spot__text fx-spot__fill" data-fx-spot-fill>Let’s talk</span>
+        </div>
+    </div>
     <div class="container contact">
         <div class="stack stack--m reveal">
             <p class="eyebrow">Contact</p>

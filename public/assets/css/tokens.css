@@ -15,7 +15,7 @@
    This file also declares the cascade layer order for the whole site.
    ========================================================================== */
 
-@layer reset, tokens, base, layout, components, utilities;
+@layer reset, tokens, base, layout, components, effects, utilities;
 
 @layer tokens {
   :root {

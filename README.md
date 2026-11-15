@@ -3,7 +3,7 @@
 **Live site:** https://dmytro-khoma-portfolio.onrender.com
 (free hosting: the first visit after a quiet period can take up to a minute to wake the server)
 
-A single-page portfolio written by hand: semantic HTML, modern CSS, vanilla
+A single-page portfolio: semantic HTML, modern CSS, vanilla
 JavaScript (ES modules) and PHP 8 with no frameworks. It also includes a
 small classic WordPress theme built on the same design system.
 
@@ -80,6 +80,7 @@ tools/
 | `base.css` | `base` | Element defaults, focus ring, skip link, reduced motion |
 | `layout.css` | `layout` | Container, stack, cluster, auto-grid, section grids |
 | `components.css` | `components` | BEM components: header, nav, buttons, cards, video, player, form |
+| `effects.css` | `effects` | Styles for the interactive effects (portfolio only, not in the theme) |
 | `utilities.css` | `utilities` | `.visually-hidden`, reveal-on-scroll, small helpers |
 
 - **Cascade layers** (`@layer`) make the priority order explicit, so there is
@@ -121,10 +122,41 @@ into readable files.
 | `video-facade.js` | Click-to-load video; prefetches player code near the viewport |
 | `video-player.js` | The custom player (loaded on demand, not on page load) |
 | `contact-form.js` | Validation, `fetch()` submission, error and success states |
+| `effects.js` | The interactive effects (see below), loaded last with `import()` |
 
 Everything works without JavaScript: the menu is always visible, the video
 facade is a normal link to the file, and the form posts and redirects back
 with server-side messages.
+
+### Effects — `effects.js` + `effects.css`
+
+A layer of interactive effects on top of the plain page, with no libraries:
+
+| Effect | How it works |
+|---|---|
+| Hero background | Raw WebGL fragment shader: domain-warped fractal noise that bends around the pointer; a click sends a pulse |
+| Kinetic headline | The `<h1>` is split into letters that lift and take the accent colour near the pointer |
+| Scramble | Eyebrows decode from random glyphs when they scroll into view |
+| Cards | 3D tilt and a glowing border that follows the pointer (masked gradient) |
+| Magnetic buttons | Buttons lean a little towards the pointer |
+| Marquee | A CSS animation; the Web Animations API changes its speed and direction with the scroll velocity |
+| Numbers | Count-up, and "gooey" blobs merged by an SVG filter (blur + alpha threshold) |
+| Contact | A canvas of dots on springs (a click sends a shock wave) and a gradient text spotlight |
+
+How they stay cheap and safe:
+
+- `main.js` loads `effects.js` with `import()` in `requestIdleCallback`, after
+  the content has painted, so LCP, CLS and blocking time do not change.
+- One `requestAnimationFrame` loop; each effect runs only while its element
+  is on screen (IntersectionObserver). Per frame only `transform`,
+  `opacity`, `clip-path`, custom properties and `<canvas>` change.
+- Everything is scoped to `.has-fx` on `<html>`. Without JavaScript, or with
+  "reduce motion" (the module is not even downloaded), the page is the
+  plain version.
+- Colours come from the design tokens and are re-read when the theme
+  changes. The split headline keeps the original text for screen readers;
+  decorative parts are `aria-hidden`.
+- Works under the strict CSP: no inline styles or scripts, only CSSOM.
 
 ### Video — the "mini player"
 
