@@ -50,7 +50,8 @@ $nonce = csp_nonce();
     <?php foreach (['theme', 'nav', 'reveal', 'video-facade', 'contact-form'] as $module): ?>
         <link rel="modulepreload" href="assets/js/<?= e($module) ?>.js">
     <?php endforeach; ?>
-    <script type="module" src="assets/js/main.js"></script>
+    <?php /* ?v= changes with every edit, so no browser keeps an old entry point. */ ?>
+    <script type="module" src="assets/js/main.js?v=<?= e((string) filemtime(APP_ROOT . '/public/assets/js/main.js')) ?>"></script>
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to content</a>

@@ -8,7 +8,7 @@
     AddOutputFilterByType DEFLATE text/html text/css text/plain text/vtt application/javascript image/svg+xml
 </IfModule>
 
-# Long cache for static assets. HTML and PHP responses are not cached.
+# Long cache for media. HTML and PHP responses are not cached.
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType image/svg+xml          "access plus 1 month"
@@ -17,7 +17,15 @@
     ExpiresByType text/vtt               "access plus 1 month"
     ExpiresByType video/mp4              "access plus 1 month"
     ExpiresByType video/webm             "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 week"
+</IfModule>
+
+# JavaScript: the browser may keep a copy but must check it with the server
+# (ETag, usually a tiny 304) before using it. Module URLs have no version
+# in them, so a long cache would keep old code after a deploy.
+<IfModule mod_headers.c>
+    <FilesMatch "\.js$">
+        Header set Cache-Control "no-cache"
+    </FilesMatch>
 </IfModule>
 
 # Correct MIME types for captions and modules.
