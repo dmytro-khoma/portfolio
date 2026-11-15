@@ -9,3 +9,9 @@ services:
     envVars:
       - key: TRUST_PROXY
         value: "1"
+      # Contact form → Telegram. Values are secrets: set them in the Render
+      # dashboard (Environment), never in this file.
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_CHAT_ID
+        sync: false

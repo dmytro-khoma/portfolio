@@ -25,6 +25,7 @@ if (extension_loaded('zlib')) {
 require __DIR__ . '/helpers.php';
 require __DIR__ . '/RateLimiter.php';
 require __DIR__ . '/ContactForm.php';
+require __DIR__ . '/TelegramNotifier.php';
 
 /* ---- Session ------------------------------------------------------------- */
 

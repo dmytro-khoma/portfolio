@@ -7,7 +7,8 @@
  *   2. Honeypot check (bots get a fake success and nothing is stored)
  *   3. Rate limit per IP address
  *   4. Normalise and validate input
- *   5. Append the message to storage/messages.log (no e-mail is sent)
+ *   5. Send the message to Telegram (if configured) and append it to
+ *      storage/messages.log
  *
  * Response format depends on the client:
  *   - fetch() with "Accept: application/json"  -> JSON + HTTP status code
@@ -99,12 +100,23 @@ if ($errors !== []) {
     $respond(422, 'error', 'Please check the highlighted fields.', $errors, $data);
 }
 
-// ---- 5. Store ---------------------------------------------------------------
+// ---- 5. Deliver -------------------------------------------------------------
+// The log file is a local backup. On hosts with a temporary disk (Render's
+// free plan) it is wiped on every deploy, so when Telegram is configured,
+// the message only counts as sent if Telegram accepted it.
+$stored = true;
 try {
     ContactForm::store($data, $storage . '/messages.log');
 } catch (Throwable $exception) {
     error_log('Contact form: ' . $exception->getMessage());
-    $respond(500, 'error', 'Sorry, something went wrong on my side. Please try again later.', [], $data);
+    $stored = false;
+}
+
+$telegram = TelegramNotifier::fromConfig();
+$delivered = $telegram ? $telegram->send(TelegramNotifier::format($data)) : $stored;
+
+if (!$delivered) {
+    $respond(500, 'error', 'Sorry, the message could not be sent. Please try again in a minute.', [], $data);
 }
 
 $respond(200, 'success', 'Thanks, your message was sent. I’ll reply soon.');

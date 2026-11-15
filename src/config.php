@@ -48,6 +48,13 @@ return [
         'captions' => 'assets/media/demo.en.vtt',
     ],
 
+    // Contact form notifications in Telegram. Set both variables on the host
+    // (Render → Environment). Without them, messages only go to the log file.
+    'telegram' => [
+        'token'   => getenv('TELEGRAM_BOT_TOKEN') ?: null,
+        'chat_id' => getenv('TELEGRAM_CHAT_ID') ?: null,
+    ],
+
     // Contact form: maximum submissions per IP address per time window.
     'rate_limit' => [
         'max'     => 3,
