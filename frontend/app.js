@@ -481,7 +481,11 @@ export async function start() {
 
   // three.js is its own chunk. The preloader waits for its first frame.
   const scene = hasWebGL()
-    ? import('./scene.js').then((module) => {
+    ? Promise.all([
+      import('./scene.js'),
+      // "Let’s talk" is sampled from a canvas, so its font must be ready.
+      Promise.race([document.fonts.load('italic 600 220px Fraunces').catch(() => {}), wait(1500)]),
+    ]).then(([module]) => {
       const instance = module.createScene();
       if (!instance) return;
       gsap.ticker.add((time) => instance.render(time));

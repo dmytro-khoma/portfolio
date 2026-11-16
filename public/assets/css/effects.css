@@ -21,8 +21,28 @@
    Layer: effects
    ========================================================================== */
 
+/* Fraunces (variable weight, Latin subset), SIL Open Font License; the files
+   and the licence are in assets/fonts/. Both files are preloaded in
+   header.php, so the swap from the fallback serif is rarely visible. */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fraunces";
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url("assets/fonts/fraunces-latin-wght-italic.woff2") format("woff2");
+}
+
 @layer effects {
   :root {
+    --font-serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
     --fx-2: #e0336f;   /* hot pink */
     --fx-3: #0f8a6a;   /* teal */
   }

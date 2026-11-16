@@ -17,6 +17,7 @@
     ExpiresByType text/vtt               "access plus 1 month"
     ExpiresByType video/mp4              "access plus 1 month"
     ExpiresByType video/webm             "access plus 1 month"
+    ExpiresByType font/woff2             "access plus 1 year"
 </IfModule>
 
 # JavaScript: the browser may keep a copy but must check it with the server
@@ -38,6 +39,7 @@
 
 # Correct MIME types for captions and modules.
 AddType text/vtt .vtt
+AddType font/woff2 .woff2
 AddType application/javascript .js
 
 # No directory listings.

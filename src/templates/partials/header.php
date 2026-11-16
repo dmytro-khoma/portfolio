@@ -36,6 +36,10 @@ $nonce = csp_nonce();
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
+    <?php /* Heading font: fetched early, in parallel with the HTML parse. */ ?>
+    <link rel="preload" href="assets/fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/fraunces-latin-wght-italic.woff2" as="font" type="font/woff2" crossorigin>
+
     <script nonce="<?= e($nonce) ?>">
         (function () {
             var root = document.documentElement;

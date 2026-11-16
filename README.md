@@ -56,6 +56,7 @@ public/                    Document root
   assets/js/               ES modules, no dependencies
   assets/build/            Vite output (git-ignored, built in Docker)
   assets/media/            Demo video, poster, captions (generated)
+  assets/fonts/            Fraunces (headings), self-hosted woff2 + licence
   assets/img/              Project covers: screenshots of the real apps (WebP)
 frontend/                  Effects layer source (bundled by Vite)
   main.js                  Tiny entry: skips everything for reduced motion
