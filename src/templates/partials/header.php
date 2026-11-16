@@ -41,6 +41,7 @@ $nonce = csp_nonce();
     <meta property="og:image:alt" content="<?= e(config('name')) ?>, <?= e(config('role')) ?>: the first screen of the site with a crystal made of shards.">
     <meta name="twitter:card" content="summary_large_image">
 
+    <link rel="canonical" href="<?= e(config('url')) ?>/">
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
     <?php /* Heading font: fetched early, in parallel with the HTML parse. */ ?>
@@ -51,12 +52,31 @@ $nonce = csp_nonce();
         (function () {
             var root = document.documentElement;
             root.classList.add('has-js');
+            // No effects for "reduce motion": lets the CSS drop their empty boxes.
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) root.classList.add('fx-off');
             try {
                 var theme = localStorage.getItem('theme');
                 if (theme === 'dark' || theme === 'light') root.dataset.theme = theme;
             } catch (error) { /* storage blocked: follow the OS setting */ }
         })();
     </script>
+
+    <?php
+    // Structured data for search engines: who this page is about.
+    $person = [
+        '@context'    => 'https://schema.org',
+        '@type'       => 'Person',
+        'name'        => config('name'),
+        'jobTitle'    => config('role'),
+        'url'         => config('url') . '/',
+        'image'       => config('url') . '/assets/img/og.jpg',
+        'description' => config('description'),
+        'address'     => ['@type' => 'PostalAddress', 'addressLocality' => 'Bratislava', 'addressCountry' => 'SK'],
+        'alumniOf'    => ['@type' => 'CollegeOrUniversity', 'name' => 'Comenius University, Faculty of Mathematics, Physics and Informatics'],
+        'sameAs'      => array_values(array_filter([config('links.github'), config('links.linkedin')])),
+    ];
+    ?>
+    <script type="application/ld+json" nonce="<?= e($nonce) ?>"><?= json_encode($person, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?></script>
 
     <style nonce="<?= e($nonce) ?>"><?= inline_css() /* trusted local file, not user input */ ?></style>
 

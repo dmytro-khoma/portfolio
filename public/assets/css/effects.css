@@ -189,10 +189,17 @@
   }
 
   .hero__orb {
+    display: none;
     order: -1;
     block-size: 46vw;
     max-block-size: 16rem;
     pointer-events: none;
+  }
+
+  /* Phones: keep the band only when the effects will run (the inline script
+     in the head decides before first paint, so nothing jumps later). */
+  .has-js:not(.fx-off) .hero__orb {
+    display: block;
   }
 
   @media (min-width: 60em) {
@@ -204,6 +211,7 @@
     }
 
     .hero__orb {
+      display: block;
       order: 0;
       block-size: auto;
       max-block-size: none;

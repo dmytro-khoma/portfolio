@@ -424,6 +424,10 @@
   /* The card is a size container, so its layout depends on the space the
      card actually has, not on the viewport. */
   .project-card {
+    /* Positioned, so the visually hidden link text inside stays in the card.
+       Otherwise it is placed against the page and, in the phone carousel,
+       sticks out to the right and makes the whole page scroll sideways. */
+    position: relative;
     container: project-card / inline-size;
     block-size: 100%;
     border: var(--border);
