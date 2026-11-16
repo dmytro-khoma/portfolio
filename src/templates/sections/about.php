@@ -17,12 +17,13 @@ declare(strict_types=1);
                 like a combat tracker for a cyberpunk tabletop game and a dinosaur catalogue.
             </p>
             <p>
-                For the web, I like to know what the browser can do on its own, and then pick the
-                tool that fits the job. The code has comments, so you can open any file and follow
+                I work on both sides: the server (Python with Django, PHP, SQL) and the browser
+                (JavaScript, CSS, WebGL). I like to know what the platform can do on its own, and
+                then pick the tool that fits the job. The code has comments, so you can open any file and follow
                 what it does.
             </p>
             <p>
-                Now I’m looking for my first paid front-end job. I can start right away.
+                Now I’m looking for my first paid job as a developer. I can start right away.
             </p>
         </div>
     </div>
@@ -36,7 +37,7 @@ declare(strict_types=1);
             <ol class="principles__list" role="list" aria-labelledby="about-aside-title">
                 <?php foreach ([
                     'Use normal HTML elements (links, buttons, forms) before I build custom ones.',
-                    'Keep pages light. Every extra script has to be worth its size.',
+                    'Show the content first. Heavy code loads after it, or not at all if you ask for less motion.',
                     'Write code that someone else can still read a month later.',
                     'Try things with the keyboard before I say they’re finished.',
                 ] as $index => $line): ?>

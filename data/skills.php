@@ -2,8 +2,8 @@
 /**
  * Skills shown in the "Skills" section.
  *
- * Every skill points to the place in THIS site where it can be checked,
- * so a reviewer can verify it instead of taking it on trust.
+ * Every skill points to the code where it can be checked (this site, or a
+ * project repository), so a reviewer can verify it instead of taking it on trust.
  *
  * @return array{
  *     cards: list<array{title: string, text: string, proof: string}>,
@@ -22,13 +22,23 @@ return [
         ],
         [
             'title' => 'JavaScript',
-            'text'  => 'Small ES modules: the theme switch, the mobile menu and the contact form. The 3D particles and scroll animations use three.js and GSAP.',
-            'proof' => 'public/assets/js/, frontend/',
+            'text'  => 'Small ES modules without a framework: the theme switch, the mobile menu and the contact form with fetch() and live validation.',
+            'proof' => 'public/assets/js/',
+        ],
+        [
+            'title' => '3D and animation',
+            'text'  => 'A three.js scene with my own GLSL shaders: 20,000 particles that morph between shapes and a crystal made of shards. Scroll scenes with GSAP ScrollTrigger and Lenis.',
+            'proof' => 'frontend/scene.js, frontend/app.js',
         ],
         [
             'title' => 'PHP',
-            'text'  => 'Simple templates and a contact form handler with validation, a CSRF token, a honeypot and a rate limit.',
+            'text'  => 'Simple templates and a contact form handler with validation, a CSRF token, a honeypot and a rate limit. Messages are sent to Telegram through the Bot API.',
             'proof' => 'public/contact.php, src/',
+        ],
+        [
+            'title' => 'Python and Django',
+            'text'  => 'The server side of the combat tracker: models, the game rules as plain functions with tests, and JSON endpoints for the JavaScript map.',
+            'proof' => 'github.com/dmytro-khoma/cyberpunk-combat-tracker',
         ],
         [
             'title' => 'WordPress',
@@ -41,5 +51,5 @@ return [
             'proof' => 'README.md',
         ],
     ],
-    'tools' => ['HTML', 'CSS', 'JavaScript', 'PHP', 'Python', 'C++', 'SQL', 'Django', 'Git & GitHub'],
+    'tools' => ['HTML', 'CSS', 'JavaScript', 'Three.js', 'GSAP', 'PHP', 'Python', 'Django', 'SQL', 'C++', 'Docker', 'Git & GitHub'],
 ];

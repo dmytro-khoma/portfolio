@@ -15,7 +15,7 @@ declare(strict_types=1);
         <p class="eyebrow" data-intro><?= e(config('role')) ?> · <?= e(config('location')) ?></p>
         <h1 class="hero__title" id="hero-title" data-fx-title>Hi, I’m Dmytro. I build <em>fast</em> and interactive websites.</h1>
         <p class="lead" data-intro>
-            I study Applied Informatics in Bratislava and I’m looking for part-time front-end work.
+            I study Applied Informatics in Bratislava and I’m looking for part-time work as a developer, front end or back end.
             The source code of this page is open on GitHub, so it also works as a code sample.
         </p>
         <div class="cluster" data-intro>

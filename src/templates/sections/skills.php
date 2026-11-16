@@ -12,7 +12,7 @@ declare(strict_types=1);
         <header class="section__header">
             <p class="eyebrow">Skills</p>
             <h2 id="skills-title">Skills</h2>
-            <p class="lead">Instead of a row of logos, here’s where you can check each one in this site’s code.</p>
+            <p class="lead">Instead of a row of logos, here’s where you can check each one: in this site’s code or in a project’s repository.</p>
         </header>
 
         <ul class="auto-grid" role="list">

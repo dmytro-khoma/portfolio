@@ -33,6 +33,13 @@ $nonce = csp_nonce();
     <meta property="og:type" content="website">
     <meta property="og:title" content="<?= e(config('name')) ?> · <?= e(config('role')) ?>">
     <meta property="og:description" content="<?= e(config('description')) ?>">
+    <?php /* Link preview picture: must be an absolute URL (1200×630). */ ?>
+    <meta property="og:url" content="<?= e(config('url')) ?>/">
+    <meta property="og:image" content="<?= e(config('url')) ?>/assets/img/og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="<?= e(config('name')) ?>, <?= e(config('role')) ?>: the first screen of the site with a crystal made of shards.">
+    <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
 
