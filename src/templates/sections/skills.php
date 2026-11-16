@@ -28,6 +28,8 @@ declare(strict_types=1);
             <?php endforeach; ?>
         </ul>
 
+        <div class="skills-progress" aria-hidden="true"><span class="skills-progress__bar"></span></div>
+
         <div class="stack mt-l">
             <h3 class="visually-hidden">Languages and tools</h3>
             <ul class="tag-list" role="list" aria-label="Languages and tools">

@@ -1,4 +1,15 @@
-# Production image: PHP 8.4 with Apache, document root = public/.
+# Stage 1: build the effects bundle (three.js, GSAP, Lenis) with Vite.
+# Output: /app/public/assets/build (hashed files + manifest), copied below.
+
+FROM node:22-slim AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY vite.config.js ./
+COPY frontend ./frontend
+RUN npm run build
+
+# Stage 2: production image, PHP 8.4 with Apache, document root = public/.
 # Apache serves static files with HTTP Range support and reads public/.htaccess.
 
 FROM php:8.4-apache
@@ -23,6 +34,7 @@ RUN sed -ri 's/^Listen 80$/Listen ${PORT}/' /etc/apache2/ports.conf \
     && sed -ri 's/<VirtualHost \*:80>/<VirtualHost *:${PORT}>/' /etc/apache2/sites-available/000-default.conf
 
 COPY . /var/www/html
+COPY --from=assets /app/public/assets/build /var/www/html/public/assets/build
 RUN mkdir -p /var/www/html/storage && chown -R www-data:www-data /var/www/html/storage
 
 EXPOSE 80

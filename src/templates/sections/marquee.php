@@ -3,8 +3,8 @@
  * Decorative marquee: two crossed bands with the tools and a few words.
  *
  * Hidden from screen readers (the same tools are listed in the Skills
- * section). It moves with a plain CSS animation; js/effects.js only speeds
- * it up and reverses it with the scroll velocity.
+ * section). It moves with a plain CSS animation; the effects bundle only
+ * speeds it up and reverses it with the scroll velocity.
  *
  * @var list<string> $tools
  */

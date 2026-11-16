@@ -19,3 +19,6 @@ desktop.ini
 
 # Node packages (npm install)
 /node_modules/
+
+# Vite output (built in Docker, see Dockerfile; locally: npm run build)
+/public/assets/build/

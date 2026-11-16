@@ -1,16 +1,19 @@
 /* ==========================================================================
    effects.css
    --------------------------------------------------------------------------
-   The "show-off" layer: styles for the interactive effects started by
-   js/effects.js (WebGL hero, kinetic title, tilt cards, marquee, gooey
-   numbers, spring-dot field, spotlight text).
+   Styles for the effects layer in frontend/ (three.js, GSAP, Lenis; built by
+   Vite): preloader, the particle canvas, the big hero, the pinned skills
+   gallery, stacked project cards and so on.
 
    Rules of this layer
-   - Everything that depends on JavaScript is scoped to .has-fx, a class
-     that js/effects.js puts on <html> only after it has started. Without
-     JS, or with "reduce motion", the page looks like the plain version.
-   - Effects never hide content and never move the layout, so they cannot
-     hurt LCP or CLS. They only use transform, opacity, filter and canvas.
+   - Layout that must not jump (hero size, numbers, marquee) is plain CSS and
+     looks the same with or without JavaScript.
+   - Everything that depends on the script is scoped to a class the script
+     puts on <html>:  .has-fx    the effects bundle is running
+                      .has-scene the WebGL particle scene is running
+     Without JS, or with "reduce motion", none of them is set.
+   - Decoration never hides content. The preloader removes itself with a
+     CSS animation if the script fails.
    - Colours come from the design tokens, so both themes just work.
 
    Not copied into the WordPress theme (see tools/build-theme.php).
@@ -36,33 +39,160 @@
     --fx-3: #c6f432;
   }
 
-  /* ---- 1. Hero stage: WebGL canvas behind the hero --------------------- */
+  /* Lenis animates the scroll itself; the CSS smooth scroll would fight it. */
+  html.has-fx {
+    scroll-behavior: auto;
+  }
+
+  /* Sections get focus after an in-page link (for keyboard order), but a
+     ring around a whole section would only be noise. */
+  .has-fx [tabindex="-1"]:focus-visible {
+    outline: none;
+  }
+
+  /* ---- 0. Preloader ------------------------------------------------------ */
+
+  .preloader {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .has-js .preloader {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      /* Safety net: if the script never starts, the curtain leaves anyway. */
+      animation: preloader-failsafe 0.5s 8s forwards;
+    }
+
+    .has-js.fx-failed .preloader,
+    .has-js .preloader.is-done {
+      display: none;
+    }
+  }
+
+  @keyframes preloader-failsafe {
+    to { opacity: 0; visibility: hidden; }
+  }
+
+  .preloader__panel {
+    position: absolute;
+    inset-inline: 0;
+    block-size: 50.5%;
+    background: var(--color-text);
+  }
+
+  .preloader__panel--top { inset-block-start: 0; }
+  .preloader__panel--bottom { inset-block-end: 0; }
+
+  .preloader__content {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: var(--space-s);
+    padding: var(--gutter);
+    color: var(--color-bg);
+  }
+
+  .preloader__name {
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .preloader__count {
+    grid-row: 3;
+    font-family: var(--font-serif);
+    font-size: clamp(5rem, 22vw, 16rem);
+    font-style: italic;
+    font-weight: 600;
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .preloader__track {
+    grid-row: 4;
+    display: block;
+    block-size: 2px;
+    background: color-mix(in srgb, var(--color-bg) 25%, transparent);
+  }
+
+  .preloader__bar {
+    display: block;
+    block-size: 100%;
+    background: var(--fx-2);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+
+  /* ---- 1. Particle canvas (behind everything) --------------------------- */
+
+  .fx-scene {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: -1;
+    inline-size: 100%;
+    block-size: 100lvh;
+    pointer-events: none;
+  }
+
+  /* ---- 2. Hero ----------------------------------------------------------- */
 
   .hero-stage {
     position: relative;
-    isolation: isolate;
     overflow: clip;
   }
 
-  .hero-canvas {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    inline-size: 100%;
-    block-size: 100%;
-    opacity: 0;
+  .hero {
+    position: relative;
+    isolation: isolate;
+    align-content: center;
+    min-block-size: calc(100svh - var(--header-height));
+    padding-block: var(--space-xl);
+  }
+
+  .hero__title {
+    max-inline-size: 16ch;
+    font-size: clamp(2.5rem, 1rem + 4.4vw, 5.25rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+/* An empty box: the blob and its halo of particles are drawn where it
+     is. Phones: a band above the headline. Wide screens: the right column. */
+  .hero__side {
+    display: contents;
+  }
+
+  .hero__orb {
+    order: -1;
+    block-size: 46vw;
+    max-block-size: 16rem;
     pointer-events: none;
-    transition: opacity 1.6s var(--ease-out);
-    /* Strongest on the right, fading out under the headline. */
-    mask-image: radial-gradient(ellipse 75% 95% at 85% 45%, #000 15%, transparent 72%);
   }
 
-  .hero-canvas.is-ready {
-    opacity: 1;
+  @media (min-width: 60em) {
+    .hero__side {
+      display: grid;
+      gap: var(--space-l);
+      align-self: stretch;
+      grid-template-rows: 1fr auto;
+    }
+
+    .hero__orb {
+      order: 0;
+      block-size: auto;
+      max-block-size: none;
+      min-block-size: 16rem;
+    }
   }
 
-  /* The facts list sits on the shader, so it gets a frosted panel. */
-  .has-fx .hero .facts {
+  /* The facts list sits on the particles, so it gets a frosted panel. */
+  .has-scene .hero .facts {
     padding-inline: var(--space-s);
     border: var(--border);
     border-radius: var(--radius-m);
@@ -70,39 +200,187 @@
     backdrop-filter: blur(16px) saturate(1.3);
   }
 
-  .has-fx .hero .facts__row:last-child {
+  .has-scene .hero .facts__row:last-child {
     border-block-end: 0;
   }
 
-  /* ---- 2. Kinetic title: letters lean towards the pointer -------------- */
+  /* ---- 2b. Editorial type: big headings, numbered sections ------------- */
+
+  main {
+    counter-reset: section;
+  }
+
+  main h2 {
+    font-size: clamp(2.2rem, 1.3rem + 3.6vw, 4.75rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+
+  .section .eyebrow::before {
+    counter-increment: section;
+    content: "(" counter(section, decimal-leading-zero) ") ";
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    letter-spacing: 0;
+  }
+
+  /* About: one wide column of large text. */
+  .about {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .about .prose {
+    max-inline-size: 52rem;
+  }
+
+  .about .prose p:not(.eyebrow) {
+    font-size: var(--step-2);
+    line-height: 1.35;
+    letter-spacing: -0.01em;
+  }
+
+  /* Principles: a list by default; pinned and shown one by one when the
+     script adds .is-pinned (wide and tall windows). */
+  .principles {
+    margin-block-start: var(--space-2xl);
+  }
+
+  .principles__title {
+    margin-block-end: var(--space-l);
+  }
+
+  .principles__track {
+    display: none;
+  }
+
+  .principles__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-l);
+  }
+
+  .principles__item {
+    display: grid;
+    align-content: start;
+    gap: var(--space-xs);
+    padding-block-start: var(--space-s);
+    border-block-start: 2px solid var(--color-text);
+  }
+
+  .principles__num {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: var(--step--1);
+  }
+
+  .principles__text {
+    font-family: var(--font-serif);
+    font-size: var(--step-1);
+    line-height: 1.3;
+  }
+
+  .principles.is-pinned {
+    display: grid;
+    align-items: center;
+    block-size: 100vh;
+    margin-block-start: 0;
+    padding-block-start: var(--header-height);
+  }
+
+  .is-pinned .principles__inner {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto 1fr;
+    column-gap: var(--space-xl);
+    align-items: start;
+  }
+
+  .is-pinned .principles__title {
+    grid-column: 1 / -1;
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: var(--step--1);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .is-pinned .principles__track {
+    display: block;
+    inline-size: 2px;
+    block-size: min(46vh, 24rem);
+    background: var(--color-border);
+  }
+
+  .principles__bar {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    background: linear-gradient(var(--color-accent), var(--fx-2));
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+  }
+
+  .is-pinned .principles__list {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .is-pinned .principles__item {
+    grid-area: 1 / 1;
+    gap: var(--space-m);
+    padding: 0;
+    border: 0;
+  }
+
+  .is-pinned .principles__num {
+    color: transparent;
+    font-family: var(--font-serif);
+    font-size: clamp(5rem, 13vw, 12rem);
+    font-style: italic;
+    font-weight: 600;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    -webkit-text-stroke: 1.5px var(--color-accent);
+  }
+
+  .is-pinned .principles__text {
+    max-inline-size: 20ch;
+    font-size: clamp(2rem, 1rem + 3.4vw, 4.25rem);
+    line-height: 1.06;
+    letter-spacing: -0.025em;
+  }
+
+  /* ---- 3. Split text ------------------------------------------------------ */
 
   .fx-word {
-    display: inline-block;
     white-space: nowrap;
   }
 
   .fx-char {
-    --f: 0;
-    display: inline-block;
-    transform: translateY(calc(var(--f) * -0.22em)) rotate(calc(var(--f) * -6deg)) scale(calc(1 + var(--f) * 0.12));
-    color: color-mix(in srgb, var(--color-accent) calc(var(--f) * 100%), currentColor);
     will-change: transform;
   }
-
-  /* ---- 3. Eyebrow scramble --------------------------------------------- */
 
   .fx-glyph {
     color: var(--color-accent);
   }
 
-  /* ---- 4. Tilt + spotlight cards --------------------------------------- */
+  /* ---- 4. Cards: glass, tilt, glowing border ----------------------------- */
+
+  .has-scene .skill-card,
+  .has-scene .form {
+    background: color-mix(in srgb, var(--color-surface) 78%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+  }
 
   .has-fx :is(.skill-card, .project-card) {
     position: relative;
+  }
+
+  .has-fx .skill-card {
     transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
     transition:
       transform 0.6s var(--ease-out),
-      box-shadow var(--duration) var(--ease-out),
       border-color var(--duration) ease;
   }
 
@@ -155,23 +433,63 @@
     color: var(--fx-2);
   }
 
-  .has-fx .project-card__media img {
-    transition: scale 0.8s var(--ease-out), rotate 0.8s var(--ease-out);
+  /* ---- 5. Skills: pinned section, cards travel sideways ------------------ */
+  /* .is-hscroll is set by the script only on wide and tall windows. */
+
+  .skill-card__index {
+    font-size: var(--step-2);
   }
 
-  .has-fx .project-card:hover .project-card__media img {
-    scale: 1.04;
-    rotate: -0.6deg;
+  .skills-progress {
+    display: none;
   }
 
-  /* ---- 5. Magnetic buttons --------------------------------------------- */
+  .section.is-hscroll {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    align-content: center;
+    min-block-size: 100vh;
+    padding-block: calc(var(--header-height) + var(--space-s)) var(--space-s);
+    overflow: clip;
+  }
 
-  .has-fx .button {
-    transition:
-      translate 0.5s var(--ease-out),
-      background-color var(--duration-fast) ease,
-      border-color var(--duration-fast) ease,
-      color var(--duration-fast) ease;
+  .is-hscroll .section__header {
+    margin-block-end: var(--space-l);
+  }
+
+  .is-hscroll .auto-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    inline-size: max-content;
+    will-change: transform;
+  }
+
+  .is-hscroll .auto-grid > li {
+    flex: none;
+    inline-size: clamp(20rem, 28vw, 26rem);
+  }
+
+  .is-hscroll .skill-card {
+    min-block-size: 15rem;
+  }
+
+  .is-hscroll .skills-progress {
+    display: block;
+    block-size: 2px;
+    margin-block-start: var(--space-m);
+    background: var(--color-border);
+  }
+
+  .skills-progress__bar {
+    display: block;
+    block-size: 100%;
+    background: linear-gradient(90deg, var(--color-accent), var(--fx-2));
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+  }
+
+  .is-hscroll .mt-l {
+    margin-block-start: var(--space-m);
   }
 
   /* ---- 6. Marquee band (decorative, aria-hidden) ------------------------ */
@@ -187,7 +505,7 @@
 
   .fx-marquee__band {
     position: absolute;
-    inline-size: 115%;
+    inline-size: 125%;
     padding-block: var(--space-xs);
     overflow: hidden;
     white-space: nowrap;
@@ -243,67 +561,13 @@
     to { translate: -50% 0; }
   }
 
-  /* ---- 7. Numbers with gooey blobs -------------------------------------- */
+  /* ---- 7. Numbers -------------------------------------------------------- */
+  /* With the scene, a ring of particles is drawn around .numbers-stage. */
 
   .numbers-stage {
     position: relative;
-    isolation: isolate;
-    overflow: clip;
-    padding-block: var(--space-l);
-    background: var(--color-bg); /* the backdrop that "difference" blends with */
+    padding-block: var(--space-xl);
   }
-
-  .fx-goo {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    display: none;
-  }
-
-  .has-fx .fx-goo {
-    display: block;
-    filter: url("#fx-goo");
-  }
-
-  .fx-blob {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-start: 50%;
-    inline-size: var(--s);
-    aspect-ratio: 1;
-    margin: calc(var(--s) / -2);
-    border-radius: 50%;
-    background: var(--color-accent);
-    animation: var(--a) var(--d) ease-in-out infinite;
-
-    &:nth-child(even) {
-      background: var(--fx-2);
-    }
-  }
-
-  .fx-blob--1 { --s: 10rem; --a: fx-orbit-1; --d: 13s; }
-  .fx-blob--2 { --s: 7rem;  --a: fx-orbit-2; --d: 9s; }
-  .fx-blob--3 { --s: 12rem; --a: fx-orbit-3; --d: 15s; }
-  .fx-blob--4 { --s: 5rem;  --a: fx-orbit-4; --d: 8s; }
-
-  .fx-blob--cursor {
-    --s: 8rem;
-    inset: 0 auto auto 0;
-    background: var(--fx-3);
-    animation: none;
-    opacity: 0;
-    transition: opacity 0.6s ease;
-  }
-
-  .numbers-stage:hover .fx-blob--cursor {
-    opacity: 1;
-  }
-
-  @keyframes fx-orbit-1 { 50% { translate: -28vw -2rem; } 0%, 100% { translate: 18vw 2rem; } }
-  @keyframes fx-orbit-2 { 50% { translate: 24vw -2rem; } 0%, 100% { translate: -14vw 3rem; } }
-  @keyframes fx-orbit-3 { 50% { translate: 4vw 3rem; } 0%, 100% { translate: -30vw -2rem; } }
-  @keyframes fx-orbit-4 { 50% { translate: -6vw 1rem; } 0%, 100% { translate: 30vw -3rem; } }
 
   .numbers {
     display: grid;
@@ -339,23 +603,49 @@
     font-size: var(--step--1);
   }
 
-  /* Over the blobs, white + "difference" keeps the big numbers readable in
-     both themes. The small labels get a solid chip instead, so their
-     contrast never depends on where a blob happens to be. */
-  .has-fx .numbers__value {
-    color: #fff;
-    mix-blend-mode: difference;
+  /* Over the ring the labels use the full text colour: the ring is faint
+     and its bands pass around the numbers, not through them. */
+  .has-scene .numbers__label {
+    color: var(--color-text);
   }
 
-  .has-fx .numbers__label {
-    align-self: flex-start;
-    margin-inline-start: -0.5em;
-    padding: 0.15em 0.5em;
-    border-radius: var(--radius-s);
-    background: var(--color-bg);
+  /* ---- 8. Projects: stacked cards, liquid covers ------------------------- */
+
+  /* .fx-stack (wide and tall windows): each card sticks under the header
+     and the next one slides over it. */
+  .fx-stack .project-list > li {
+    position: sticky;
+    inset-block-start: calc(var(--header-height) + var(--space-m));
   }
 
-  /* ---- 8. Spotlight + spring field (contact) ---------------------------- */
+  .fx-stack .project-card {
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+
+  .has-fx .project-card__media {
+    overflow: hidden;
+  }
+
+  .has-fx .project-card__media img {
+    transition: scale 0.8s var(--ease-out), rotate 0.8s var(--ease-out);
+  }
+
+  .has-fx .project-card:hover .project-card__media img {
+    scale: 1.04;
+    rotate: -0.6deg;
+  }
+
+  /* Set for about a second on hover; the filter is created by the script. */
+  .is-liquid {
+    filter: url("#fx-liquid");
+  }
+
+  .fx-defs {
+    position: absolute;
+  }
+
+  /* ---- 9. "Let’s talk" (contact) ------------------------------------------ */
 
   .fx-spot {
     position: relative;
@@ -366,20 +656,10 @@
     border: var(--border);
     border-radius: var(--radius-l);
     overflow: clip;
-    isolation: isolate;
     user-select: none;
   }
 
-  .fx-spot__canvas {
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    inline-size: 100%;
-    block-size: 100%;
-  }
-
   .fx-spot__text {
-    grid-area: 1 / 1;
     font-family: var(--font-serif);
     font-size: clamp(3rem, 1rem + 10vw, 10rem);
     font-weight: 600;
@@ -387,24 +667,32 @@
     line-height: 1;
     letter-spacing: -0.04em;
     white-space: nowrap;
-    pointer-events: none;
-  }
-
-  .fx-spot__fill {
-    display: none;
-  }
-
-  .has-fx .fx-spot__out {
     color: transparent;
     -webkit-text-stroke: 1px var(--color-text-muted);
+    pointer-events: none;
+    transition: opacity var(--duration-slow) ease;
   }
 
-  .has-fx .fx-spot__fill {
-    display: block;
-    background: linear-gradient(100deg, var(--color-accent), var(--fx-2) 50%, var(--fx-3));
-    background-clip: text;
-    -webkit-background-clip: text;
+  /* The particles spell the words instead. */
+  .has-scene .fx-spot__text {
+    opacity: 0;
+  }
+
+  /* ---- 10. Footer wordmark (decorative, aria-hidden) ----------------------- */
+
+  .site-footer__mark {
+    padding-block-start: var(--space-l);
+    overflow: clip;
+    font-family: var(--font-serif);
+    font-size: clamp(2.6rem, 14vw, 15rem);
+    font-style: italic;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-align: center;
+    white-space: nowrap;
     color: transparent;
-    clip-path: circle(var(--r, 0px) at var(--x, 50%) var(--y, 50%));
+    -webkit-text-stroke: 1px var(--color-text-muted);
+    user-select: none;
   }
 }

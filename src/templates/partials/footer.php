@@ -8,8 +8,9 @@ declare(strict_types=1);
 $source = config('links.source');
 ?>
     <footer class="site-footer">
+        <p class="site-footer__mark" aria-hidden="true"><?= e(config('name')) ?></p>
         <div class="container site-footer__inner">
-            <p>&copy; <?= e(date('Y')) ?> <?= e(config('name')) ?>. HTML, CSS, JavaScript, WebGL and PHP.</p>
+            <p>&copy; <?= e(date('Y')) ?> <?= e(config('name')) ?>. Built with three.js, GSAP, Lenis and PHP.</p>
             <p>
                 <?php if ($source): ?>
                     <a href="<?= e($source) ?>">View the source code</a> ·

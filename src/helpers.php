@@ -93,6 +93,25 @@ function inline_css(): string
     return trim($css);
 }
 
+/**
+ * URL of the effects bundle (three.js, GSAP, Lenis), built by Vite from
+ * frontend/ into public/assets/build/ with a content hash in the file name.
+ * Returns null when the bundle has not been built: the page then simply
+ * runs without the effects layer.
+ */
+function fx_entry(): ?string
+{
+    $manifest = APP_ROOT . '/public/assets/build/.vite/manifest.json';
+    if (!is_file($manifest)) {
+        return null;
+    }
+
+    $data = json_decode((string) file_get_contents($manifest), true);
+    $file = $data['frontend/main.js']['file'] ?? null;
+
+    return is_string($file) ? 'assets/build/' . $file : null;
+}
+
 /* ---- Request ------------------------------------------------------------- */
 
 /**

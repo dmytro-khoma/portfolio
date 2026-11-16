@@ -3,13 +3,15 @@
 **Live site:** https://dmytro-khoma-portfolio.onrender.com
 (free hosting: the first visit after a quiet period can take up to a minute to wake the server)
 
-A single-page portfolio: semantic HTML, modern CSS, vanilla
-JavaScript (ES modules) and PHP 8. It also includes a
-small classic WordPress theme built on the same design system.
+A single-page portfolio: semantic HTML, modern CSS, JavaScript (ES modules)
+and PHP 8, with an effects layer on top: a three.js particle scene that
+morphs from section to section, GSAP ScrollTrigger scenes and Lenis smooth
+scrolling, bundled with Vite. It also includes a small classic WordPress
+theme built on the same design system.
 
-**Lighthouse (local, `php -S`):** Performance 100 · Accessibility 100 ·
-Best Practices 100 · SEO 100, on both the mobile and the desktop preset.
-LCP 1.2 s (mobile), CLS 0, Total Blocking Time 0 ms.
+**Measured locally (Chrome, Performance API, laptop, 2026-11-16):** CLS 0,
+Total Blocking Time 0–11 ms over three runs. The effects are loaded after the
+content in separate chunks, and not at all with "reduce motion".
 
 ---
 
@@ -19,16 +21,20 @@ Requirements: PHP 8.1+ with the `mbstring` extension (enabled by default on
 most Linux and macOS installs).
 
 ```bash
-cd public
-php -S localhost:8000
+npm install        # once: three.js, GSAP, Lenis, Vite
+npm run build      # builds frontend/ into public/assets/build/
+php -S localhost:8000 -t public
 ```
 
-Then open <http://localhost:8000>.
+Then open <http://localhost:8000>. The site also runs without the build
+step (and without Node): it is then the plain page with no effects layer.
+Run `npm run build` again after changing anything in `frontend/`.
 
 ### Deploy
 
-The repository includes a `Dockerfile` (PHP 8.4 + Apache, document root
-`public/`) and a `render.yaml` blueprint for [Render](https://render.com):
+The repository includes a two-stage `Dockerfile` (Node builds the Vite
+bundle, then PHP 8.4 + Apache serves it; document root `public/`) and a
+`render.yaml` blueprint for [Render](https://render.com):
 connect the repository as a Blueprint and every push to `main` redeploys.
 Behind a reverse proxy set `TRUST_PROXY=1`, so the client IP and HTTPS are
 read from the `X-Forwarded-*` headers.
@@ -48,8 +54,15 @@ public/                    Document root
   media.php                Serves the demo video with HTTP Range support
   assets/css/              Design system, one file per cascade layer
   assets/js/               ES modules, no dependencies
+  assets/build/            Vite output (git-ignored, built in Docker)
   assets/media/            Demo video, poster, captions (generated)
   assets/img/              Project covers: screenshots of the real apps (WebP)
+frontend/                  Effects layer source (bundled by Vite)
+  main.js                  Tiny entry: skips everything for reduced motion
+  app.js                   Preloader, Lenis, GSAP scroll scenes, pointer effects
+  scene.js                 three.js particle scene (its own chunk)
+  state.js                 Shared state and colour tokens
+vite.config.js             Build config: frontend/ -> public/assets/build/
 src/
   bootstrap.php            Session, security headers, includes
   config.php               All personal and site settings
@@ -122,43 +135,47 @@ into readable files.
 | `video-facade.js` | Click-to-load video; prefetches player code near the viewport |
 | `video-player.js` | The custom player (loaded on demand, not on page load) |
 | `contact-form.js` | Validation, `fetch()` submission, error and success states |
-| `effects.js` | The interactive effects (see below), loaded last with `import()` |
 
-Everything works without JavaScript: the menu is always visible, the video
-facade is a normal link to the file, and the form posts and redirects back
-with server-side messages.
+Everything works without JavaScript: the menu is always visible, and the
+form posts and redirects back with server-side messages.
 
-### Effects — `effects.js` + `effects.css`
+### Effects — `frontend/` + `effects.css`
 
-A layer of interactive effects on top of the plain page:
+A layer on top of the plain page, built with three.js, GSAP (ScrollTrigger,
+SplitText) and Lenis, bundled by Vite into three files: a ~1 KB entry, the
+scroll/animation chunk, and the three.js scene chunk.
 
-| Effect | How it works |
+| Scene | How it works |
 |---|---|
-| Hero background | Raw WebGL fragment shader: domain-warped fractal noise that bends around the pointer; a click sends a pulse |
-| Kinetic headline | The `<h1>` is split into letters that lift and take the accent colour near the pointer |
-| Scramble | Eyebrows decode from random glyphs when they scroll into view |
-| Cards | 3D tilt and a glowing border that follows the pointer (masked gradient) |
-| Magnetic buttons | Buttons lean a little towards the pointer |
-| Marquee | A CSS animation; the Web Animations API changes its speed and direction with the scroll velocity |
-| Numbers | Count-up, and "gooey" blobs merged by an SVG filter (blur + alpha threshold) |
-| Contact | A canvas of dots on springs (a click sends a shock wave) and a gradient text spotlight |
+| Crystal | A lit 3D object in the hero: an icosphere split into separate shards around a glowing core, flat-shaded with iridescent facets and edge lines. Shards lift under the pointer, a click blows them apart for a moment, and the crystal shatters when the hero scrolls out |
+| Particles | One cloud of 20,000 points (9,000 on phones) behind the whole page, drawn in one call. A vertex shader morphs it between shapes as you scroll: a halo around the crystal (hero), wave field (about), torus knot (skills), ring (numbers), loose cloud, and the words "Let’s talk" (contact). The pointer pushes particles away; a click sends a shock wave. The cloud dims while the page scrolls fast. Bloom in the dark theme |
+| Preloader | Counts while the three.js chunk loads, then opens like a curtain. A CSS animation removes it if the script never starts |
+| Hero | The headline flips in letter by letter (SplitText keeps the sentence as the accessible name) |
+| About | The text lights up word by word, scrubbed by the scroll. On wide windows the four principles are pinned and shown one big line at a time |
+| Skills | On wide windows the section is pinned and the cards travel sideways |
+| Projects | Cards stick and stack; covers reveal from a mask and ripple on hover (SVG displacement filter) |
+| Small things | Magnetic buttons, tilt cards with a glowing border, scramble eyebrows, a marquee that follows the scroll speed |
 
-How they stay cheap and safe:
+How it stays safe:
 
-- `main.js` loads `effects.js` with `import()` in `requestIdleCallback`, after
-  the content has painted, so LCP, CLS and blocking time do not change.
-- One `requestAnimationFrame` loop; each effect runs only while its element
-  is on screen (IntersectionObserver). Per frame only `transform`,
-  `opacity`, `clip-path`, custom properties and `<canvas>` change.
-- Everything is scoped to `.has-fx` on `<html>`. Without JavaScript, or with
-  "reduce motion" (the module is not even downloaded), the page is the
-  plain version.
-- Colours come from the design tokens and are re-read when the theme
-  changes. The split headline keeps the original text for screen readers;
-  decorative parts are `aria-hidden`.
-- Works under the strict CSP: no inline styles or scripts, only CSSOM.
+- `frontend/main.js` checks `prefers-reduced-motion` first. With it, none of
+  the libraries is downloaded and the page is the plain version.
+- The scene chunk is loaded with `import()`. Setup runs in small steps while
+  the preloader counts, so there is no long task (see the numbers above).
+- Shapes that belong to an element (sphere, ring, text) read that element's
+  box each frame, so they scroll with the page like normal content.
+- The scene lowers its own quality (bloom, pixel ratio, particle count) if
+  the frame rate is poor.
+- Everything script-dependent is scoped to `.has-fx` / `.has-scene` on
+  `<html>`. Decorative nodes are `aria-hidden`; in-page links still move the
+  focus and update the URL.
+- Works under the strict CSP: all files come from `'self'`, no inline styles
+  or scripts, only CSSOM.
 
 ### Video — the "mini player"
+
+Not shown on the portfolio page any more. The code stays in the repository
+because the WordPress theme uses it for its `[video_demo]` shortcode.
 
 1. **Facade.** On page load there is only a poster image and a play button.
    No player code and no video bytes are downloaded.

@@ -30,10 +30,10 @@ $linkedin = config('links.linkedin');
 ?>
 <section class="section" id="contact" aria-labelledby="contact-title">
     <div class="container">
-        <div class="fx-spot" aria-hidden="true" data-fx-spot>
-            <canvas class="fx-spot__canvas" data-fx-field></canvas>
-            <span class="fx-spot__text fx-spot__out">Let’s talk</span>
-            <span class="fx-spot__text fx-spot__fill" data-fx-spot-fill>Let’s talk</span>
+        <?php /* Decoration. With the 3D scene the particles spell these words
+                 inside this box; without it the outlined text is shown. */ ?>
+        <div class="fx-spot" aria-hidden="true" data-fx-anchor="text">
+            <span class="fx-spot__text">Let’s talk</span>
         </div>
     </div>
     <div class="container contact">

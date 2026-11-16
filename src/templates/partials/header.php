@@ -9,6 +9,8 @@
  *   graph is preloaded so the imports download in parallel.
  * - A tiny inline script sets the saved theme before first paint, which
  *   prevents a flash of the wrong colour scheme.
+ * - The effects bundle (frontend/, built by Vite) is a separate module; its
+ *   entry is ~1 KB and loads the heavy chunks itself, only when wanted.
  *
  * @var array<int, array{id: string, label: string}> $nav
  */
@@ -47,13 +49,31 @@ $nonce = csp_nonce();
 
     <style nonce="<?= e($nonce) ?>"><?= inline_css() /* trusted local file, not user input */ ?></style>
 
-    <?php foreach (['theme', 'nav', 'reveal', 'video-facade', 'contact-form'] as $module): ?>
+    <?php foreach (['theme', 'nav', 'reveal', 'contact-form'] as $module): ?>
         <link rel="modulepreload" href="assets/js/<?= e($module) ?>.js">
     <?php endforeach; ?>
     <?php /* ?v= changes with every edit, so no browser keeps an old entry point. */ ?>
     <script type="module" src="assets/js/main.js?v=<?= e((string) filemtime(APP_ROOT . '/public/assets/js/main.js')) ?>"></script>
+    <?php /* Effects bundle (Vite). Hashed file name, so it can be cached forever. */ ?>
+    <?php if ($fx = fx_entry()): ?>
+        <script type="module" src="<?= e($fx) ?>"></script>
+    <?php endif; ?>
 </head>
 <body>
+    <?php if ($fx): ?>
+        <?php /* Decorative curtain while the 3D chunk loads. CSS shows it only
+                 with JS and without "reduce motion", and hides it by itself
+                 after a few seconds if the script never starts. */ ?>
+        <div class="preloader" data-preloader aria-hidden="true">
+            <div class="preloader__panel preloader__panel--top"></div>
+            <div class="preloader__panel preloader__panel--bottom"></div>
+            <div class="preloader__content">
+                <span class="preloader__name"><?= e(config('name')) ?> · Portfolio</span>
+                <span class="preloader__count" data-preloader-count>000</span>
+                <span class="preloader__track"><span class="preloader__bar" data-preloader-bar></span></span>
+            </div>
+        </div>
+    <?php endif; ?>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="progress-bar" aria-hidden="true"></div>
 

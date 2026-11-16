@@ -3,17 +3,19 @@
  * Numbers: a few measured facts about this page.
  *
  * The final values are printed by the server, so they are correct without
- * JavaScript. js/effects.js counts up to them when the section scrolls in
- * and adds the gooey blobs behind (an SVG filter).
+ * JavaScript. The effects bundle counts up to them when the section scrolls
+ * in, and the particle scene forms a ring around .numbers-stage.
  */
 
 declare(strict_types=1);
 
+// Measured on 2026-11-16 in Chrome with the Performance API (layout-shift
+// and longtask entries) on a laptop. Measure again after changing the effects.
 $numbers = [
-    ['value' => '100', 'unit' => '',   'label' => 'Lighthouse score in all four categories'],
-    ['value' => '0',   'unit' => '',   'label' => 'layout shift while the page loads (CLS)'],
-    ['value' => '0',   'unit' => 'ms', 'label' => 'Total Blocking Time'],
-    ['value' => '1.2', 'unit' => 's',  'label' => 'Largest Contentful Paint on a phone'],
+    ['value' => '20', 'unit' => 'k',  'label' => 'particles in the 3D scene, drawn in one call (9k on phones)'],
+    ['value' => '0',  'unit' => '',   'label' => 'layout shift while the page loads (CLS)'],
+    ['value' => '11', 'unit' => 'ms', 'label' => 'Total Blocking Time on a laptop, worst of three runs'],
+    ['value' => '0',  'unit' => 'KB', 'label' => 'of 3D and animation code if you ask for reduced motion'],
 ];
 ?>
 <section class="section" id="numbers" aria-labelledby="numbers-title" data-fx-numbers>
@@ -21,16 +23,10 @@ $numbers = [
         <header class="section__header">
             <p class="eyebrow">In numbers</p>
             <h2 id="numbers-title">The effects are heavy. The page is not.</h2>
-            <p class="lead">Every effect on this page loads after the content and stops when it scrolls out of view. Measured with Lighthouse.</p>
+            <p class="lead">The 3D scene and the animations load after the content, in their own files. Measured in Chrome with the Performance API.</p>
         </header>
 
-        <div class="numbers-stage" data-fx-numbers-stage>
-            <div class="fx-goo" aria-hidden="true">
-                <i class="fx-blob fx-blob--1"></i><i class="fx-blob fx-blob--2"></i>
-                <i class="fx-blob fx-blob--3"></i><i class="fx-blob fx-blob--4"></i>
-                <i class="fx-blob fx-blob--cursor" data-fx-cursor-blob></i>
-            </div>
-
+        <div class="numbers-stage" data-fx-anchor="ring">
         <dl class="numbers">
             <?php foreach ($numbers as $item): ?>
                 <div class="numbers__item">

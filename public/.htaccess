@@ -28,6 +28,14 @@
     </FilesMatch>
 </IfModule>
 
+# The Vite bundle (assets/build/) has a content hash in every file name, so
+# it can be cached for a year: a new build simply gets new names.
+<IfModule mod_headers.c>
+    <If "%{REQUEST_URI} =~ m#/assets/build/assets/#">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </If>
+</IfModule>
+
 # Correct MIME types for captions and modules.
 AddType text/vtt .vtt
 AddType application/javascript .js

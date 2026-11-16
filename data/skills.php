@@ -22,8 +22,8 @@ return [
         ],
         [
             'title' => 'JavaScript',
-            'text'  => 'Small ES modules: the theme switch, the mobile menu, the video player and the contact form.',
-            'proof' => 'public/assets/js/',
+            'text'  => 'Small ES modules: the theme switch, the mobile menu and the contact form. The 3D particles and scroll animations use three.js and GSAP.',
+            'proof' => 'public/assets/js/, frontend/',
         ],
         [
             'title' => 'PHP',
@@ -34,11 +34,6 @@ return [
             'title' => 'WordPress',
             'text'  => 'A small classic theme that uses the same CSS as this site, plus a [video_demo] shortcode.',
             'proof' => 'wordpress-theme/',
-        ],
-        [
-            'title' => 'Video',
-            'text'  => 'The video loads only after a click. The player has custom controls, built on top of the browser’s <video> element.',
-            'proof' => 'the video demo below',
         ],
         [
             'title' => 'Speed and accessibility',

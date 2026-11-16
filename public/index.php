@@ -14,7 +14,6 @@ $nav = [
     ['id' => 'about',    'label' => 'About'],
     ['id' => 'skills',   'label' => 'Skills'],
     ['id' => 'projects', 'label' => 'Projects'],
-    ['id' => 'video',    'label' => 'Video demo'],
     ['id' => 'contact',  'label' => 'Contact'],
 ];
 
@@ -34,7 +33,6 @@ render('partials/header', ['nav' => $nav]);
     render('sections/skills', ['skills' => $skills]);
     render('sections/numbers');
     render('sections/projects', ['projects' => $projects]);
-    render('sections/video', ['video' => config('video')]);
     render('sections/contact', ['result' => is_array($contactResult) ? $contactResult : []]);
     ?>
 </main>

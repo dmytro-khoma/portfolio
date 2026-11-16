@@ -25,15 +25,27 @@ declare(strict_types=1);
                 Now I’m looking for my first paid front-end job. I can start right away.
             </p>
         </div>
+    </div>
 
-        <aside class="stack reveal" aria-labelledby="about-aside-title">
-            <h3 id="about-aside-title">What I try to do</h3>
-            <ul class="stack" role="list">
-                <li>Use normal HTML elements (links, buttons, forms) before I build custom ones.</li>
-                <li>Keep pages light. Every extra script has to be worth its size.</li>
-                <li>Write code that someone else can still read a month later.</li>
-                <li>Try things with the keyboard before I say they’re finished.</li>
-            </ul>
-        </aside>
+    <?php /* On wide screens the effects bundle pins this block and shows the
+             four lines one at a time; otherwise it is a plain list. */ ?>
+    <div class="principles" data-principles>
+        <div class="container principles__inner">
+            <h3 class="principles__title" id="about-aside-title">What I try to do</h3>
+            <span class="principles__track" aria-hidden="true"><span class="principles__bar"></span></span>
+            <ol class="principles__list" role="list" aria-labelledby="about-aside-title">
+                <?php foreach ([
+                    'Use normal HTML elements (links, buttons, forms) before I build custom ones.',
+                    'Keep pages light. Every extra script has to be worth its size.',
+                    'Write code that someone else can still read a month later.',
+                    'Try things with the keyboard before I say they’re finished.',
+                ] as $index => $line): ?>
+                    <li class="principles__item">
+                        <span class="principles__num" aria-hidden="true"><?= e(sprintf('%02d', $index + 1)) ?></span>
+                        <p class="principles__text"><?= e($line) ?></p>
+                    </li>
+                <?php endforeach; ?>
+            </ol>
+        </div>
     </div>
 </section>
