@@ -149,20 +149,20 @@ scroll/animation chunk, and the three.js scene chunk.
 | Scene | How it works |
 |---|---|
 | Crystal | A lit 3D object in the hero: an icosphere split into separate shards around a glowing core, flat-shaded with iridescent facets and edge lines. Shards lift under the pointer, a click blows them apart for a moment, and the crystal shatters when the hero scrolls out |
-| Particles | One cloud of 20,000 points (9,000 on phones) behind the whole page, drawn in one call. A vertex shader morphs it between shapes as you scroll: a halo around the crystal (hero), wave field (about), torus knot (skills), ring (numbers), loose cloud, and the words "Let’s talk" (contact). The pointer pushes particles away; a click sends a shock wave. The cloud dims while the page scrolls fast. Bloom in the dark theme |
+| Particles | One cloud of 20,000 points (9,000 on phones) behind the whole page, drawn in one call. A vertex shader morphs it between shapes as you scroll: a halo around the crystal (hero), wave field (projects), torus knot (skills), loose cloud (about), and the words "Let’s talk" (contact). The pointer pushes particles away; a click sends a shock wave. The cloud dims while the page scrolls fast. Bloom in the dark theme |
 | Preloader | Counts while the three.js chunk loads, then opens like a curtain. A CSS animation removes it if the script never starts |
 | Hero | The headline flips in letter by letter (SplitText keeps the sentence as the accessible name) |
-| About | The text lights up word by word, scrubbed by the scroll. On wide windows the four principles are pinned and shown one big line at a time |
+| About | The text lights up word by word, scrubbed by the scroll |
 | Skills | On wide windows the section is pinned and the cards travel sideways |
 | Projects | Cards stick and stack; covers reveal from a mask and ripple on hover (SVG displacement filter) |
-| Small things | Magnetic buttons, tilt cards with a glowing border, scramble eyebrows, a marquee that follows the scroll speed |
+| Small things | Magnetic buttons, tilt cards with a glowing border, scramble eyebrows |
 
 How it stays safe:
 
 - `frontend/main.js` checks `prefers-reduced-motion` first. With it, none of
   the libraries is downloaded and the page is the plain version.
 - The scene chunk is loaded with `import()`. Setup runs in small steps while
-  the preloader counts, so there is no long task (see the numbers above).
+  the preloader counts, so there is no long task (see the measurements above).
 - Shapes that belong to an element (sphere, ring, text) read that element's
   box each frame, so they scroll with the page like normal content.
 - The scene lowers its own quality (bloom, pixel ratio, particle count) if

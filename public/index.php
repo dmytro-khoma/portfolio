@@ -11,9 +11,9 @@ declare(strict_types=1);
 require __DIR__ . '/../src/bootstrap.php';
 
 $nav = [
-    ['id' => 'about',    'label' => 'About'],
-    ['id' => 'skills',   'label' => 'Skills'],
     ['id' => 'projects', 'label' => 'Projects'],
+    ['id' => 'skills',   'label' => 'Skills'],
+    ['id' => 'about',    'label' => 'About'],
     ['id' => 'contact',  'label' => 'Contact'],
 ];
 
@@ -28,11 +28,9 @@ render('partials/header', ['nav' => $nav]);
 <main id="main">
     <?php
     render('sections/hero');
-    render('sections/marquee', ['tools' => $skills['tools']]);
-    render('sections/about');
-    render('sections/skills', ['skills' => $skills]);
-    render('sections/numbers');
     render('sections/projects', ['projects' => $projects]);
+    render('sections/skills', ['skills' => $skills]);
+    render('sections/about');
     render('sections/contact', ['result' => is_array($contactResult) ? $contactResult : []]);
     ?>
 </main>

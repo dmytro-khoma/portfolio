@@ -5,8 +5,8 @@
  * "shape" (a list of target positions); scrolling moves a morph value from
  * one shape to the next, so the cloud flows:
  *
- *   halo around the crystal (hero) → wave field (about) → torus knot (skills) → ring (numbers)
- *   → loose cloud (projects) → the words "Let’s talk" (contact)
+ *   halo around the crystal (hero) → wave field (projects) → torus knot (skills)
+ *   → loose cloud (about) → the words "Let’s talk" (contact)
  *
  * The hero also has a real lit object: a crystal made of separate shards
  * (the triangles of an icosphere) around a glowing core. Shards lift under
@@ -17,7 +17,7 @@
  *  - All movement happens in the vertex shader; JavaScript only sends a few
  *    uniforms per frame and never touches the particle buffers, except when
  *    the pair of shapes changes.
- *  - Shapes that belong to an element (orb, ring, text) read that element's
+ *  - Shapes that belong to an element (orb, text) read that element's
  *    box every frame, so they scroll with the page like normal content.
  *  - Bloom runs only in the dark theme on devices with a mouse, and the
  *    scene lowers its own quality if the frame rate is poor.
@@ -276,19 +276,11 @@ function makeShapes(count) {
     o[j + 2] = Math.sin(3 * t) / 3 + (rnd() - 0.5) * tube * 2;
   });
 
-  const ring = make((o, j, i) => {
-    const a = rnd() * Math.PI * 2;
-    // Three bands, like the rings of a planet.
-    const band = i % 3;
-    const r = [0.62, 0.8, 0.96][band] + (rnd() - 0.5) * [0.1, 0.12, 0.05][band];
-    o[j] = Math.cos(a) * r; o[j + 1] = (rnd() - 0.5) * 0.03; o[j + 2] = Math.sin(a) * r;
-  });
-
   const cloud = make((o, j) => {
     o[j] = (rnd() - 0.5) * 3.4; o[j + 1] = (rnd() - 0.5) * 2.2; o[j + 2] = -1.6 + rnd() * 2;
   });
 
-  return [orb, field, knot, ring, cloud, makeText(count, 'Let’s talk') ?? cloud];
+  return [orb, field, knot, cloud, makeText(count, 'Let’s talk') ?? cloud];
 }
 
 /** Sample the filled pixels of a word; x spans -1..1. */
@@ -462,7 +454,6 @@ export function createScene() {
 
   const anchors = {
     orb: document.querySelector('[data-fx-anchor="orb"]'),
-    ring: document.querySelector('[data-fx-anchor="ring"]'),
     text: document.querySelector('[data-fx-anchor="text"]'),
   };
   const box = { x: 0, y: 0, w: 1, h: 1 };
@@ -501,13 +492,6 @@ export function createScene() {
       pos.set(0, 0, -1.2);
       fx.set(0.025, 0, 0.028, 0.6 * dim);
       return [Math.min(worldW, WORLD_H) * 0.52, 0.5];
-    },
-    (t, rot, pos, fx) => { // ring around the numbers
-      const b = measure(anchors.ring);
-      rotate(rot, 0.36, t * 0.07, -0.05);
-      pos.set(b.x, b.y, 0);
-      fx.set(0.006, 0, 0.024, 0.38 * dim);
-      return [Math.max(b.w * 0.62, b.h * 0.9), 0.5];
     },
     (t, rot, pos, fx) => { // loose cloud
       rotate(rot, 0, t * 0.025, 0);

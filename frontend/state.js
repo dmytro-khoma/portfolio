@@ -10,7 +10,7 @@ export const state = {
   /** Pointer position in viewport pixels. */
   pointer: { x: innerWidth * 0.7, y: innerHeight * 0.4, active: false },
   /** Progress of each particle morph (0..1), written by ScrollTrigger. */
-  segments: [0, 0, 0, 0, 0],
+  segments: [0, 0, 0, 0],
   /** Set to 1 on a click; the scene lets it decay (a shock wave). */
   kick: 0,
   /** Scroll speed (px per frame, signed), written from Lenis. */

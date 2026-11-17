@@ -2,11 +2,12 @@
 /**
  * Skills shown in the "Skills" section.
  *
- * Every skill points to the code where it can be checked (this site, or a
- * project repository), so a reviewer can verify it instead of taking it on trust.
+ * Ordered by what matters most to an employer. Every card links to the code
+ * where it can be checked (this site or a project repository), so a reviewer
+ * can verify it instead of taking it on trust.
  *
  * @return array{
- *     cards: list<array{title: string, text: string, proof: string}>,
+ *     cards: list<array{title: string, text: string, proof: string, url: string}>,
  *     tools: list<string>
  * }
  */
@@ -16,40 +17,41 @@ declare(strict_types=1);
 return [
     'cards' => [
         [
-            'title' => 'CSS',
-            'text'  => 'One set of design tokens, split into cascade layers. I used clamp() for font sizes, container queries for the project cards, and :has() in the form.',
-            'proof' => 'public/assets/css/',
+            'title' => 'Python and Django',
+            'text'  => 'The back end of the combat tracker: Django models, the game rules as plain Python functions covered by 27 tests, and JSON endpoints for the JavaScript map.',
+            'proof' => 'cyberpunk-combat-tracker',
+            'url'   => 'https://github.com/dmytro-khoma/cyberpunk-combat-tracker',
         ],
         [
             'title' => 'JavaScript',
-            'text'  => 'Small ES modules without a framework: the theme switch, the mobile menu and the contact form with fetch() and live validation.',
+            'text'  => 'ES modules without a framework: the mobile menu, the theme switch and the contact form with fetch() and live validation. The tracker’s grid map talks to Django.',
             'proof' => 'public/assets/js/',
-        ],
-        [
-            'title' => '3D and animation',
-            'text'  => 'A three.js scene with my own GLSL shaders: 20,000 particles that morph between shapes and a crystal made of shards. Scroll scenes with GSAP ScrollTrigger and Lenis.',
-            'proof' => 'frontend/scene.js, frontend/app.js',
+            'url'   => 'https://github.com/dmytro-khoma/portfolio/tree/main/public/assets/js',
         ],
         [
             'title' => 'PHP',
-            'text'  => 'Simple templates and a contact form handler with validation, a CSRF token, a honeypot and a rate limit. Messages are sent to Telegram through the Bot API.',
-            'proof' => 'public/contact.php, src/',
+            'text'  => 'Templates and a contact form handler with validation, a CSRF token, a honeypot and a rate limit. Messages go to Telegram through the Bot API.',
+            'proof' => 'src/, public/contact.php',
+            'url'   => 'https://github.com/dmytro-khoma/portfolio/tree/main/src',
         ],
         [
-            'title' => 'Python and Django',
-            'text'  => 'The server side of the combat tracker: models, the game rules as plain functions with tests, and JSON endpoints for the JavaScript map.',
-            'proof' => 'github.com/dmytro-khoma/cyberpunk-combat-tracker',
+            'title' => '3D and animation',
+            'text'  => 'A three.js scene with my own GLSL shaders: 20,000 particles that morph between shapes and a crystal made of shards. Scroll scenes with GSAP and Lenis.',
+            'proof' => 'frontend/scene.js',
+            'url'   => 'https://github.com/dmytro-khoma/portfolio/blob/main/frontend/scene.js',
         ],
         [
-            'title' => 'WordPress',
-            'text'  => 'A small classic theme that uses the same CSS as this site, plus a [video_demo] shortcode.',
-            'proof' => 'wordpress-theme/',
+            'title' => 'CSS',
+            'text'  => 'One set of design tokens in cascade layers, a light and a dark theme, fluid sizes with clamp(), container queries and :has().',
+            'proof' => 'public/assets/css/',
+            'url'   => 'https://github.com/dmytro-khoma/portfolio/tree/main/public/assets/css',
         ],
         [
             'title' => 'Speed and accessibility',
-            'text'  => 'Lazy images and code that loads only when it is needed. The page works with a keyboard and respects the “reduce motion” setting.',
+            'text'  => 'The content paints first and heavy code loads after it. Everything works with a keyboard, and “reduce motion” turns the effects off.',
             'proof' => 'README.md',
+            'url'   => 'https://github.com/dmytro-khoma/portfolio#readme',
         ],
     ],
-    'tools' => ['HTML', 'CSS', 'JavaScript', 'Three.js', 'GSAP', 'PHP', 'Python', 'Django', 'SQL', 'C++', 'Docker', 'Git & GitHub'],
+    'tools' => ['Python', 'Django', 'JavaScript', 'PHP', 'SQL', 'HTML', 'CSS', 'Git & GitHub', 'Docker', 'Three.js', 'GSAP', 'C++'],
 ];

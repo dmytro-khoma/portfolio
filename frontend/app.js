@@ -9,12 +9,11 @@
  *  2. Smooth scroll  Lenis, driven by the GSAP ticker; in-page links animate
  *  3. Hero           letters flip in; the block drifts away on scroll
  *  4. Headings       words rise when a section arrives; eyebrows "decode"
- *  5. About          the text lights up word by word; principles are pinned
+ *  5. About          the text lights up word by word
  *  6. Skills         pinned section, cards travel sideways (wide screens)
- *  7. Numbers        count up
- *  8. Projects       cards stack; covers reveal; liquid hover (SVG filter)
- *  9. Particles      scroll positions feed the morphs of scene.js
- * 10. Pointer        magnetic buttons, tilt cards, marquee
+ *  7. Projects       cards stack; covers reveal; liquid hover (SVG filter)
+ *  8. Particles      scroll positions feed the morphs of scene.js
+ *  9. Pointer        magnetic buttons, tilt cards
  */
 
 import gsap from 'gsap';
@@ -189,7 +188,7 @@ function initScramble() {
    5. About: words light up with the scroll
    ========================================================================== */
 
-function initAbout(media) {
+function initAbout() {
   const prose = $('#about .prose');
   if (prose) {
     // aria "none": the words stay readable for screen readers as they are.
@@ -199,37 +198,6 @@ function initAbout(media) {
       scrollTrigger: { trigger: prose, start: 'top 72%', end: 'bottom 62%', scrub: 0.4 },
     });
   }
-
-  // Principles: pinned full-screen, one big line at a time.
-  const block = $('[data-principles]');
-  const items = $$('.principles__item', block ?? document);
-  if (!block || !items.length) return;
-
-  media.add('(min-width: 48em) and (min-height: 36em)', () => {
-    block.classList.add('is-pinned');
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: block, start: 'top top', end: () => `+=${innerHeight * 0.75 * items.length}`,
-        pin: true, scrub: 0.5, anticipatePin: 1,
-      },
-    });
-    items.forEach((item, index) => {
-      const parts = [$('.principles__num', item), $('.principles__text', item)];
-      if (index > 0) {
-        timeline.fromTo(parts, { y: 70, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.45, ease: 'power2.out', stagger: 0.06 }, index);
-      }
-      if (index < items.length - 1) {
-        timeline.to(parts, { y: -60, autoAlpha: 0, duration: 0.35, ease: 'power2.in', stagger: 0.04 }, index + 0.62);
-      }
-    });
-    timeline.to('.principles__bar', { scaleY: 1, ease: 'none', duration: items.length - 1 + 0.5 }, 0);
-    timeline.to({}, { duration: 0.5 });
-
-    return () => {
-      block.classList.remove('is-pinned');
-      gsap.set($$('.principles__num, .principles__text, .principles__bar', block), { clearProps: 'all' });
-    };
-  });
 }
 
 /* ==========================================================================
@@ -246,19 +214,33 @@ function initSkills(media) {
     section.classList.add('is-hscroll');
     const distance = () => Math.max(0, track.scrollWidth - track.parentElement.clientWidth);
 
-    gsap.to(track, {
+    const slide = gsap.to(track, {
       x: () => -distance(), ease: 'none',
       scrollTrigger: {
         trigger: section, start: 'top top', end: () => `+=${distance()}`,
         pin: true, scrub: 0.6, invalidateOnRefresh: true, anticipatePin: 1,
       },
     });
+
+    // Keyboard: a link in a card that is off to the side scrolls the page
+    // until the gallery has brought that card into view.
+    const onFocus = (event) => {
+      const card = event.target.closest('li');
+      const max = distance();
+      const trigger = slide.scrollTrigger;
+      if (!card || !max || !trigger) return;
+      const left = card.offsetLeft - track.firstElementChild.offsetLeft;
+      const x = clamp(left - (track.parentElement.clientWidth - card.offsetWidth) / 2, 0, max);
+      lenis.scrollTo(trigger.start + (x / max) * (trigger.end - trigger.start), { immediate: true });
+    };
+    track.addEventListener('focusin', onFocus);
     gsap.to('.skills-progress__bar', {
       scaleX: 1, ease: 'none',
       scrollTrigger: { trigger: section, start: 'top top', end: () => `+=${distance()}`, scrub: 0.6 },
     });
 
     return () => {
+      track.removeEventListener('focusin', onFocus);
       section.classList.remove('is-hscroll');
       gsap.set(track, { clearProps: 'transform' });
     };
@@ -266,30 +248,7 @@ function initSkills(media) {
 }
 
 /* ==========================================================================
-   7. Numbers
-   ========================================================================== */
-
-function initNumbers() {
-  for (const element of $$('[data-count]')) {
-    const target = parseFloat(element.dataset.count);
-    if (!Number.isFinite(target)) continue;
-    const decimals = (element.dataset.count.split('.')[1] ?? '').length;
-    const value = { now: 0 };
-    gsap.to(value, {
-      now: target, duration: 1.8, ease: 'power4.out',
-      onUpdate: () => { element.textContent = value.now.toFixed(decimals); },
-      scrollTrigger: { trigger: element, start: 'top 85%', once: true },
-    });
-  }
-
-  gsap.from('.numbers__item', {
-    y: 50, autoAlpha: 0, duration: 0.9, ease: 'power3.out', stagger: 0.1,
-    scrollTrigger: { trigger: '.numbers', start: 'top 82%', once: true },
-  });
-}
-
-/* ==========================================================================
-   8. Projects
+   7. Projects
    ========================================================================== */
 
 function initProjects(media) {
@@ -351,15 +310,14 @@ function initLiquid(images) {
 }
 
 /* ==========================================================================
-   9. Particle morphs: scroll positions → state.segments (read by scene.js)
+   8. Particle morphs: scroll positions → state.segments (read by scene.js)
    ========================================================================== */
 
 function initMorphs() {
   const steps = [
-    ['[data-hero]', 'bottom 88%', 'bottom 25%'],          // orb → wave field
-    ['#skills', 'top 85%', 'top 20%'],                    // field → torus knot
-    ['#numbers', 'top 100%', 'top 55%'],                   // knot → ring
-    ['#projects', 'top 50%', 'top 5%'],                    // ring → loose cloud
+    ['[data-hero]', 'bottom 88%', 'bottom 25%'],          // halo → wave field (projects)
+    ['#skills', 'top 85%', 'top 20%'],                    // field → torus knot (skills)
+    ['#about', 'top 85%', 'top 25%'],                     // knot → loose cloud (about)
     ['[data-fx-anchor="text"]', 'top 98%', 'top 48%'],    // cloud → "Let’s talk"
   ];
   steps.forEach(([trigger, start, end], index) => {
@@ -373,7 +331,7 @@ function initMorphs() {
 }
 
 /* ==========================================================================
-   10. Pointer: magnetic buttons, tilt cards, marquee
+   9. Pointer: magnetic buttons, tilt cards
    ========================================================================== */
 
 function initPointer() {
@@ -422,30 +380,6 @@ function initPointer() {
   };
   tilt($$('.skill-card'), 12);
   tilt($$('.project-card'), 3);
-}
-
-/** The CSS marquee speeds up and reverses with the scroll velocity. */
-function initMarquee() {
-  const marquee = $('[data-fx-marquee]');
-  if (!marquee?.getAnimations) return;
-  const rows = $$('.fx-marquee__row', marquee);
-  let rate = 1;
-  let visible = false;
-  new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(marquee);
-
-  gsap.ticker.add(() => {
-    if (!visible) return;
-    const velocity = lenis.velocity;
-    const target = (velocity < -0.5 ? -1 : 1) * (1 + Math.min(Math.abs(velocity) * 0.12, 7));
-    const next = lerp(rate, target, 0.1);
-    if (Math.abs(next - rate) < 0.01) return;
-    rate = next;
-    for (const row of rows) for (const animation of row.getAnimations()) animation.playbackRate = rate;
-  });
-
-  // The bands also slide against each other.
-  gsap.to('.fx-marquee__band--a', { xPercent: -4, ease: 'none', scrollTrigger: { trigger: marquee, scrub: true } });
-  gsap.to('.fx-marquee__band--b', { xPercent: 4, ease: 'none', scrollTrigger: { trigger: marquee, scrub: true } });
 }
 
 function initFooter() {
@@ -500,9 +434,9 @@ export async function start() {
   // The rest is set up in small steps while the preloader counts, so no
   // single task blocks the main thread for long.
   const steps = [
-    initPointer, initHeadings, initScramble, () => initAbout(media),
+    initPointer, initHeadings, initScramble, () => initProjects(media),
     () => initSkills(media), // pins: created before the triggers below it
-    initNumbers, () => initProjects(media), initMorphs, initMarquee, initFooter,
+    initAbout, initMorphs, initFooter,
     () => ScrollTrigger.sort(), () => ScrollTrigger.refresh(),
   ];
   for (const step of steps) {

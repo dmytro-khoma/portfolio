@@ -13,10 +13,10 @@ declare(strict_types=1);
 <section class="container hero" aria-labelledby="hero-title">
     <div class="stack stack--l">
         <p class="eyebrow" data-intro><?= e(config('role')) ?> · <?= e(config('location')) ?></p>
-        <h1 class="hero__title" id="hero-title" data-fx-title>Hi, I’m Dmytro. I build <em>fast</em> and interactive websites.</h1>
+        <h1 class="hero__title" id="hero-title" data-fx-title>Hi, I’m Dmytro. I build <em>full-stack</em> web apps.</h1>
         <p class="lead" data-intro>
-            I study Applied Informatics in Bratislava and I’m looking for part-time work as a developer, front end or back end.
-            The source code of this page is open on GitHub, so it also works as a code sample.
+            Python and Django or PHP on the server, JavaScript and WebGL in the browser.
+            Second-year Applied Informatics student in Bratislava, looking for a part-time junior role.
         </p>
         <div class="cluster" data-intro>
             <a class="button button--primary" href="#projects">
@@ -34,19 +34,19 @@ declare(strict_types=1);
     <dl class="facts" aria-label="Key facts" data-intro>
         <div class="facts__row">
             <dt class="facts__term">Available</dt>
-            <dd class="facts__value">Right now, up to 20 hours a week</dd>
+            <dd class="facts__value">Right away</dd>
         </div>
         <div class="facts__row">
-            <dt class="facts__term">Based in</dt>
-            <dd class="facts__value">Bratislava, Slovakia</dd>
+            <dt class="facts__term">Stack</dt>
+            <dd class="facts__value">Python, Django, PHP, JavaScript, three.js</dd>
+        </div>
+        <div class="facts__row">
+            <dt class="facts__term">Work</dt>
+            <dd class="facts__value">Remote or on site in Bratislava</dd>
         </div>
         <div class="facts__row">
             <dt class="facts__term">Languages</dt>
             <dd class="facts__value">English B2, Slovak B2</dd>
-        </div>
-        <div class="facts__row">
-            <dt class="facts__term">Studying</dt>
-            <dd class="facts__value">Applied Informatics, FMFI UK, 2nd year</dd>
         </div>
     </dl>
     </div>

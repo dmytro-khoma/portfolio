@@ -15,8 +15,8 @@ declare(strict_types=1);
     <div class="container">
         <header class="section__header">
             <p class="eyebrow">Projects</p>
-            <h2 id="projects-title">Projects</h2>
-            <p class="lead">School and hobby projects. None of them are big, but I learned something from each.</p>
+            <h2 id="projects-title">Apps I built and shipped</h2>
+            <p class="lead">Designed, built and deployed on my own. Both are live, with the source code on GitHub.</p>
         </header>
 
         <div class="project-scroller" role="region" aria-label="Project list" tabindex="0">

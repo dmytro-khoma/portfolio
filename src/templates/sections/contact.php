@@ -39,8 +39,8 @@ $linkedin = config('links.linkedin');
     <div class="container contact">
         <div class="stack stack--m reveal">
             <p class="eyebrow">Contact</p>
-            <h2 id="contact-title">Contact</h2>
-            <p class="lead">If you have work for me or just a question, send me a message here. I can work remotely or in Bratislava.</p>
+            <h2 id="contact-title">Write to me</h2>
+            <p class="lead">Have a job, a project or a question? Send a message here or e-mail me. Remote or on site in Bratislava.</p>
 
             <?php if ($email || $github || $linkedin): ?>
                 <ul class="stack" role="list">
